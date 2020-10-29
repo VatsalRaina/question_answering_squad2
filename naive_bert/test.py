@@ -132,7 +132,8 @@ def main(args):
     for inp_id, s_pos, e_pos, tok_typ_id, att_msk in dl:
         count+=1
         inp_id, s_pos, e_pos, tok_typ_id, att_msk = inp_id.to(device), s_pos.to(device), e_pos.to(device), tok_typ_id.to(device), att_msk.to(device)
-        with torch.no_grad():                                                                                                                                             outputs = model(input_ids=inp_id, attention_mask=att_msk, token_type_ids=tok_typ_id, start_positions=s_pos, end_positions=e_pos)
+        with torch.no_grad():                                                                                                                                             
+            outputs = model(input_ids=inp_id, attention_mask=att_msk, token_type_ids=tok_typ_id, start_positions=s_pos, end_positions=e_pos)
         b_start_logits = outputs[1].detach().cpu().numpy().tolist()
         pred_start_logits += b_start_logits
         b_end_logits = outputs[2].detach().cpu().numpy().tolist()

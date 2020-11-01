@@ -112,8 +112,10 @@ def main(args):
             outputs = model(b_input_ids, token_type_ids=b_tok_typ_ids, attention_mask=b_att_msks, labels=b_labels)
         logits = outputs[1]
         logits = logits.detach().cpu().numpy()
-        logits = np.squeeze(logits[:, 1], 2)
+        logits = np.squeeze(logits[:, 1])
         logits = logits.tolist()
+        if not(isinstance(logits, list)):
+            logits = [logits]
         print(logits)
         y_pred_all += logits
     y_pred_all = np.array(y_pred_all)

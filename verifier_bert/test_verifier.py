@@ -114,6 +114,7 @@ def main(args):
         logits = logits.detach().cpu().numpy()
         logits = np.squeeze(logits[:, 1])
         logits = logits.tolist()
+        print(logits)
         y_pred_all += logits
     y_pred_all = np.array(y_pred_all)
     y_true = labels.detach().cpu().numpy()

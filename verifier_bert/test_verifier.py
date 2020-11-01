@@ -63,8 +63,8 @@ def main(args):
     too_long = 0
     for ex in dev_data:
         count+=1
-        if count==17:
-            break
+        # if count==17:
+        #     break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)

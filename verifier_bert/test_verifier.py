@@ -63,8 +63,8 @@ def main(args):
     too_long = 0
     for ex in dev_data:
         count+=1
-        # if count==17:
-        #     break
+        if count==18:
+            break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
@@ -112,7 +112,7 @@ def main(args):
             outputs = model(b_input_ids, token_type_ids=b_tok_typ_ids, attention_mask=b_att_msks, labels=b_labels)
         logits = outputs[1]
         logits = logits.detach().cpu().numpy()
-        logits = np.squeeze(logits[:, 1])
+        logits = np.squeeze(logits[:, 1], 1)
         logits = logits.tolist()
         print(logits)
         y_pred_all += logits

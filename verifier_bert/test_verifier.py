@@ -61,10 +61,10 @@ def main(args):
     labels = []
     count = 0
     too_long = 0
-    for ex in train_data:
+    for ex in dev_data:
         count+=1
-        # if count==17:
-        #     break
+        if count==17:
+            break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
@@ -116,6 +116,7 @@ def main(args):
         logits = logits.tolist()
         y_pred_all += logits
     y_pred_all = np.array(y_pred_all)
+    y_true = labels.detach().cpu().numpy()
 
     # Save the predicted values so that they can be used for ensembling
     np.savetxt(args.predictions_save_path, y_pred_all)

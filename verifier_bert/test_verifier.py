@@ -22,6 +22,8 @@ parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
 parser.add_argument('--model_path', type=str, help='Load path to trained model')
 parser.add_argument('--predictions_save_path', type=str, help="Where to save predicted values")
+parser.add_argument('--labels_save_path', type=str, help="Where to save true values")
+
 
 def format_time(elapsed):
     '''
@@ -123,6 +125,8 @@ def main(args):
 
     # Save the predicted values so that they can be used for ensembling
     np.savetxt(args.predictions_save_path, y_pred_all)
+    # Save lavels
+    np.savetxt(args.labels_save_path, y_true)
 
     # Calculate and report best F0.5 score
     # Label 1 indicates on-topic and 0 indicates off-topic

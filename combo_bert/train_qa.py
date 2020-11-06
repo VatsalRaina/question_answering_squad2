@@ -87,8 +87,8 @@ def main(args):
     too_long = 0
     for ex in train_data:
         count+=1
-        #if count==17:
-        #    break
+        if count==3:
+           break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
@@ -189,7 +189,7 @@ def main(args):
             model.zero_grad()
             start_logits, end_logits, verification_logits = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids)
             
-            loss_verification = criterion_verification(verification_logits, b_labs))
+            loss_verification = criterion_verification(verification_logits, b_labs)
             loss_start = criterion_qa(start_logits, b_start_pos_true)
             loss_end = criterion_qa(end_logits, b_end_pos_true)
 

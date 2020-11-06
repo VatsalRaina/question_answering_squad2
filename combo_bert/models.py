@@ -28,5 +28,6 @@ class BertQA(torch.nn.Module):
         end_logits = end_logits.squeeze(-1)
 
         verification_logits = self.verification_output(sequence_output)
+        verification_logits = verification_logits.squeeze()
 
         return start_logits, end_logits, verification_logits

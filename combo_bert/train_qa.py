@@ -130,7 +130,7 @@ def main(args):
     end_positions_true = torch.tensor(end_positions_true)
     end_positions_true = end_positions_true.long().to(device)
     labels = torch.tensor(labels)
-    labels = labels.long().to(device)
+    labels = labels.float().to(device)
     input_ids = torch.tensor(input_ids)
     input_ids = input_ids.long().to(device)
     token_type_ids = torch.tensor(token_type_ids)

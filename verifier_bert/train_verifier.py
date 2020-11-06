@@ -25,7 +25,9 @@ parser.add_argument('--lr_decay', type=float, default=0.85, help='Specify the le
 parser.add_argument('--dropout', type=float, default=0.1, help='Specify the dropout rate')
 parser.add_argument('--n_epochs', type=int, default=1, help='Specify the number of epochs to train for')
 parser.add_argument('--seed', type=int, default=1, help='Specify the global random seed')
+parser.add_argument('--reverse', type=int, default=0, help='Specify the whether the bert is reversed')
 parser.add_argument('--save_path', type=str, help='Load path to which trained model will be saved')
+
 
 def format_time(elapsed):
     '''
@@ -85,7 +87,10 @@ def main(args):
         # if count==17:
         #     break
         question, passage = ex["question"], ex["context"]
-        combo = question + " [SEP] " + passage
+        if args.reverse==0:
+            combo = question + " [SEP] " + passage
+        elif args.reverse==1:
+            combo = passage + " [SEP] " + question
         inp_ids = tokenizer.encode(combo)
         if len(inp_ids) > 512:
             too_long+=1

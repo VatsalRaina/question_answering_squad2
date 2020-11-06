@@ -20,6 +20,7 @@ from transformers import BertForSequenceClassification
 
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
+parser.add_argument('--reverse', type=int, default=0, help='Specify the whether the bert is reversed')
 parser.add_argument('--model_path', type=str, help='Load path to trained model')
 parser.add_argument('--predictions_save_path', type=str, help="Where to save predicted values")
 parser.add_argument('--labels_save_path', type=str, help="Where to save true values")
@@ -68,7 +69,10 @@ def main(args):
         # if count==18:
         #     break
         question, passage = ex["question"], ex["context"]
-        combo = question + " [SEP] " + passage
+        if args.reverse==0:
+            combo = question + " [SEP] " + passage
+        elif args.reverse==1:
+            combo = passage + " [SEP] " + question
         inp_ids = tokenizer.encode(combo)
         if len(inp_ids) > 512:
             too_long+=1

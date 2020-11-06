@@ -16,7 +16,7 @@ class BertQA(torch.nn.Module):
         # self.init_weights()
 
     
-    def forward(self, input_ids, attention_mask, token_type_ids, start_positions, end_positions):
+    def forward(self, input_ids, attention_mask, token_type_ids):
 
         outputs = self.bert(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
 

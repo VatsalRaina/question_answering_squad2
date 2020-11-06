@@ -29,6 +29,6 @@ class BertQA(torch.nn.Module):
         start_logits = start_logits.squeeze(-1)
         end_logits = end_logits.squeeze(-1)
 
-        verification_logits = self.classifier(pooled_output)
+        verification_logits = torch.sigmoid(self.classifier(pooled_output))
 
         return start_logits, end_logits, verification_logits

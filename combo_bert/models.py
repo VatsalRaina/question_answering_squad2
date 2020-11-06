@@ -13,7 +13,7 @@ class BertQA(torch.nn.Module):
         self.qa_outputs = torch.nn.Linear(self.bert.config.hidden_size, 2)
         self.verification_output = torch.nn.Linear(self.bert.config.hidden_size, 1)
 
-        self.init_weights()
+        # self.init_weights()
 
     
     def forward(self, input_ids, attention_mask, token_type_ids, start_positions, end_positions):

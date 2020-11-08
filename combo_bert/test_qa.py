@@ -62,7 +62,7 @@ def main(args):
     device = get_default_device()
 
     dev_data = load_dataset('squad_v2', split='validation')
-    #print(dev_data[19])
+    print(dev_data[19])
 
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
@@ -131,7 +131,7 @@ def main(args):
     ds = TensorDataset(input_ids, start_positions_true, end_positions_true, token_type_ids, attention_masks, labels)
     dl = DataLoader(ds, batch_size=args.batch_size, shuffle=False)
 
-    model = torch.load(args.model_path)
+    model = torch.load(args.model_path, map_location=device)
     model.eval().to(device)
     pred_start_logits = []
     pred_end_logits = []

@@ -62,7 +62,7 @@ def main(args):
     device = get_default_device()
 
     dev_data = load_dataset('squad_v2', split='validation')
-    print(dev_data[19])
+    print(len(dev_data))
 
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 

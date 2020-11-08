@@ -136,8 +136,9 @@ def main(args):
     pred_start_logits = []
     pred_end_logits = []
     pred_verification_logits = []
-
+    count = 0
     for inp_id, s_pos, e_pos, tok_typ_id, att_msk, labs in dl:
+        print(count)
         count+=1
         inp_id, s_pos, e_pos, tok_typ_id, att_msk, labs = inp_id.to(device), s_pos.to(device), e_pos.to(device), tok_typ_id.to(device), att_msk.to(device), labs.to(device)
         with torch.no_grad():

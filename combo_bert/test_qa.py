@@ -180,3 +180,8 @@ def main(args):
     frac_correct_neg = num_correct_neg / total_neg
     print("Fraction correct answers calculated with label=0: ")
     print(frac_correct_neg)
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    main(args)

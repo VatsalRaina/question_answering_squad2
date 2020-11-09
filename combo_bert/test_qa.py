@@ -7,6 +7,7 @@ import sys
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import numpy as np
+from sklearn.metrics import precision_recall_curve
 import random
 import time
 import datetime
@@ -152,6 +153,7 @@ def main(args):
     end_positions_true = end_positions_true.detach().cpu().numpy()
     labels = labels.detach().cpu().numpy()
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
+    pred_verification_logits = np.asarray(pred_verification_logits)
     # Get the best values by looking at the maximum logits (it might be better to look at the best summed start and end logits)
     pred_start_pos = np.argmax(pred_start_logits, axis=1)
     pred_end_pos = np.argmax(pred_end_logits, axis=1)
@@ -181,6 +183,22 @@ def main(args):
     frac_correct_neg = num_correct_neg / total_neg
     print("Fraction correct answers calculated with label=0: ")
     print(frac_correct_neg)
+
+    # Get F0.5 score using the verification logits
+    y_true = 1.-labels
+    y_pred = 1.-pred_verification_logits
+    precision, recall, _ = precision_recall_curve(y_true, y_pred)
+    f_score = np.amax( (1.+0.5**2) * ( (precision * recall) / (0.5**2 * precision + recall) ) )
+    print("Verification F0.5 score is:")
+    print(f_score)
+
+    # Save all necessary file (in order to be able to ensemble)
+    np.savetxt(args.predictions_save_path + "start_pos_true.txt", start_positions_true)
+    np.savetxt(args.predictions_save_path + "end_pos_true.txt", end_positions_true)
+    np.savetxt(args.predictions_save_path + "pred_start_logits.txt", pred_start_logits)
+    np.savetxt(args.predictions_save_path + "pred_end_logits.txt", pred_end_logits)
+    np.savetxt(args.predictions_save_path + "labels.txt", labels)
+    np.savetxt(args.predictions_save_path + "verification_probs.txt", pred_verification_logits)
 
 
 if __name__ == '__main__':

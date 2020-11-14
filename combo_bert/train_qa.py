@@ -53,7 +53,7 @@ def _find_sub_list(sl,l):
         if l[ind:ind+sll]==sl:
             return ind,ind+sll-1
     print("Didn't find match, return <no answer>")
-    return 0,0
+    return -1,0
 
 def main(args):
     if not os.path.isdir('CMDs'):
@@ -105,6 +105,8 @@ def main(args):
             ans_ids = tokenizer.encode(ex["answers"]["text"][0])
             ans_ids = ans_ids[1:-1]  # Remove the automatically added [CLS] and [SEP] tokens at beginning and end
             start_idx, end_idx = _find_sub_list(ans_ids, inp_ids)
+            if start_idx == -1:
+                continue
             lab = 1
         if start_idx==0:
             no_answer+=1

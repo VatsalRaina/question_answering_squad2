@@ -53,7 +53,7 @@ def _find_sub_list(sl,l):
         if l[ind:ind+sll]==sl:
             return ind,ind+sll-1
     print("Didn't find match, return <no answer>")
-    return 0,0
+    return -1,0
 
 
 def main(args):
@@ -103,6 +103,17 @@ def main(args):
         input_ids.append(inp_ids)
         token_type_ids.append(tok_type_ids)
         labels.append(lab)
+
+        # Balance the training dataset (the original set has twice as many on-topic as off-topic)
+        if lab==0:
+            input_ids.append(inp_ids)
+            token_type_ids.append(tok_type_ids)
+            labels.append(lab)
+
+    print("Number of questions with answers:")
+    print(sum(labels))
+    print("Number of questions without answers")
+    print(len(labels)-sum(labels))
     print("Greater than 512 tokens in length:")
     print(too_long)
     # Pad all sequences with 0

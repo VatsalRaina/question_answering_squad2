@@ -63,7 +63,7 @@ def main(args):
     dev_data = load_dataset('squad_v2', split='validation')
     #print(dev_data[19])
 
-    tokenizer = ElectraTokenizer.from_pretrained('google/electra-small-discriminator', do_lower_case=True)
+    tokenizer = ElectraTokenizer.from_pretrained('google/electra-base-discriminator', do_lower_case=True)
 
 
     start_positions_true = []

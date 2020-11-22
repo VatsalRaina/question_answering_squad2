@@ -73,7 +73,7 @@ def main(args):
     train_data = load_dataset('squad_v2', split='train')
     print(train_data[1953])
 
-    tokenizer = ElectraTokenizer.from_pretrained('google/electra-small-discriminator', do_lower_case=True)
+    tokenizer = ElectraTokenizer.from_pretrained('google/electra-base-discriminator', do_lower_case=True)
 
 
     start_positions_true = []
@@ -137,7 +137,7 @@ def main(args):
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
-    model = ElectraForQuestionAnswering.from_pretrained("google/electra-small-discriminator")
+    model = ElectraForQuestionAnswering.from_pretrained("google/electra-base-discriminator")
     model.to(device)
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,

@@ -51,7 +51,7 @@ def _find_sub_list(sl,l):
         if l[ind:ind+sll]==sl:
             return ind,ind+sll-1
     print("Didn't find match, return <no answer>")
-    return 0,0
+    return -1,0
 
 
 def main(args):
@@ -102,6 +102,8 @@ def main(args):
             ans_ids = tokenizer.encode(ex["answers"]["text"][0])
             ans_ids = ans_ids[1:-1]  # Remove the automatically added [CLS] and [SEP] tokens at beginning and end
             start_idx, end_idx = _find_sub_list(ans_ids, inp_ids)
+            if start_idx == -1:
+                continue
         if start_idx==0:
             no_answer+=1
         start_positions_true.append(start_idx)
@@ -175,11 +177,11 @@ def main(args):
             b_end_pos_true = batch[2].to(device)
             b_tok_typ_ids = batch[3].to(device)
             b_att_msks = batch[4].to(device)
-            print(b_input_ids.size())
-            print(b_start_pos_true.size())
-            print(b_end_pos_true.size())
-            print(b_tok_typ_ids.size())
-            print(b_att_msks.size())
+            #print(b_input_ids.size())
+            #print(b_start_pos_true.size())
+            #print(b_end_pos_true.size())
+            #print(b_tok_typ_ids.size())
+            #print(b_att_msks.size())
             model.zero_grad()
             outputs = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids, start_positions=b_start_pos_true, end_positions=b_end_pos_true)
             loss = outputs[0]

@@ -23,7 +23,7 @@ def get_default_device():
 
 device = get_default_device()
 seed="1"
-model_path = "/home/alta/relevance/vr311/phd/combo_bert/seed"+seed+"/bert_comboQA_seed"+seed+".pt"
+model_path = "/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_bert/seed"+seed+"/bert_comboQA_seed"+seed+".pt"
 model = torch.load(model_path, map_location=device)
 model.eval().to(device)
 
@@ -85,7 +85,7 @@ saliency_all = saliency_all.detach().cpu().numpy()
 saliency_all = saliency_all[1:-1, :]
 
 # Save the gradient values so that we can average them across 15 seeds
-np.savetxt("/home/alta/relevance/vr311//saliency/verification_seed"+seed+".txt", saliency_all)
+np.savetxt("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_bert/saliency/verification_seed"+seed+".txt", saliency_all)
 with open("./saliency/words.txt", "w") as output:
     for row in words:
         output.write(str(row) + '\n')

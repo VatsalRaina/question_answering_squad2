@@ -49,8 +49,8 @@ print(embedded.size())
 start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(embedded, 0))
 
 #print(rel_logit)
-verification_logit.backward()
-#torch.sum(start_logits).backward()
+#verification_logit.backward()
+torch.sum(start_logits).backward()
 #torch.sum(end_logits).backward()
 
 print(embedded.grad)

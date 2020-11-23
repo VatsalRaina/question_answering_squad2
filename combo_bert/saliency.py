@@ -86,7 +86,7 @@ saliency_all = saliency_all[1:-1, :]
 
 # Save the gradient values so that we can average them across 15 seeds
 np.savetxt("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_bert/saliency/verification_seed"+seed+".txt", saliency_all)
-with open("./saliency/words.txt", "w") as output:
+with open("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_bert/saliency/words.txt", "w") as output:
     for row in words:
         output.write(str(row) + '\n')
                                                                                      

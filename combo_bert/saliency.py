@@ -89,8 +89,8 @@ np.savetxt("/home/alta/relevance/vr311//saliency/verification_seed"+seed+".txt",
 with open("./saliency/words.txt", "w") as output:
     for row in words:
         output.write(str(row) + '\n')
-
-                                                                                                                                                                                                """
+                                                                                     
+"""
 # Try and plot a heatmap
 saliency_all = saliency_all.detach().cpu().numpy()
 saliency_all = saliency_all[1:-1, :]

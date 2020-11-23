@@ -29,8 +29,8 @@ model.eval().to(device)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
-prompt = "In what country is Normandy located"
-#prompt = "When were the Normans in Normandy"
+#prompt = "In what country is Normandy located"
+prompt = "When were the Normans in Normandy"
 response = "The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse (Norman comes from Norseman) raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries."
 combo = prompt + " [SEP] " + response
 
@@ -50,8 +50,8 @@ start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(em
 
 #print(rel_logit)
 #verification_logit.backward()
-torch.sum(start_logits).backward()
-#torch.sum(end_logits).backward()
+#torch.sum(start_logits).backward()
+torch.sum(end_logits).backward()
 
 print(embedded.grad)
 

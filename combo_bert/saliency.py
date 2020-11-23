@@ -50,7 +50,7 @@ start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(em
 
 #print(rel_logit)
 #verification_logit.backward()
-start_logits.backward()
+torch.sum(start_logits).backward()
 #end_logits.backward()
 
 print(embedded.grad)

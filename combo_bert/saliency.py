@@ -46,7 +46,7 @@ embedded = torch.tensor(embedding_matrix(pr_resp), requires_grad=True)
 print(embedded)
 print(embedded.size())
 
-start_logits, end_logits, verification_logit = model.saliency(inputs_embeds=torch.unsqueeze(embedded, 0))
+start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(embedded, 0))
 
 #print(rel_logit)
 verification_logit.backward()

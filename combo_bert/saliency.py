@@ -33,8 +33,11 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=Tru
 #prompt = "When were the Normans in Normandy"
 #response = "The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse (Norman comes from Norseman) raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries."
 
-prompt = "talk about a sports event that you saw you should say what sports event you saw what happened during this event how you felt about the event"
-response = "And last year I saw watch and have games on tv exciting game for me and last house closing the to me did many and exciting american football is for me is really hard and people very great"
+prompt = "What name is given to any prime number larger than 2"
+response = "Hence, 6 is not prime. The image at the right illustrates that 12 is not prime: 12 = 3 · 4. No even number greater than 2 is prime because by definition, any such number n has at least three distinct divisors, namely 1, 2, and n. This implies that n is not prime. Accordingly, the term odd prime refers to any prime number greater than 2. Similarly, when written in the usual decimal system, all prime numbers larger than 5 end in 1, 3, 7, or 9, since even numbers are multiples of 2 and numbers ending in 0 or 5 are multiples of 5."
+
+#prompt = "talk about a sports event that you saw you should say what sports event you saw what happened during this event how you felt about the event"
+#response = "And last year I saw watch and have games on tv exciting game for me and last house closing the to me did many and exciting american football is for me is really hard and people very great"
 
 combo = prompt + " [SEP] " + response
 
@@ -115,6 +118,6 @@ plt.close()
 start_logits = start_logits.detach().cpu().numpy()
 end_logits = end_logits.detach().cpu().numpy()
 print("Start position: ")
-print(np.argmax(start_logits[:,1:]))
+print(np.argmax(start_logits))
 print("End position: ")
-print(np.argmax(end_logits[:,1:]))
+print(np.argmax(end_logits))

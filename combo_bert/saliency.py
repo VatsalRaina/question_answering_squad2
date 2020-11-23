@@ -23,7 +23,7 @@ def get_default_device():
 
 device = get_default_device()
 seed="1"
-model_path = "./equal"+seed+"/bert_comboQA_seed"+seed+".pt"
+model_path = "/home/alta/relevance/vr311/phd/combo_bert/seed"+seed+"/bert_comboQA_seed"+seed+".pt"
 model = torch.load(model_path, map_location=device)
 model.eval().to(device)
 

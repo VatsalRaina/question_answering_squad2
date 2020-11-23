@@ -1,0 +1,108 @@
+#! /usr/bin/env python
+
+import torch
+import numpy as np
+
+from transformers import BertTokenizer
+from transformers import BertForSequenceClassification
+
+import matplotlib
+matplotlib.use('agg')
+from matplotlib import pyplot as plt
+
+from models import BertQA
+
+# Set device
+def get_default_device():
+    if torch.cuda.is_available():
+        print("Got CUDA!")
+        return torch.device('cuda')
+    else:
+        return torch.device('cpu')
+
+
+device = get_default_device()
+seed="1"
+model_path = "./equal"+seed+"/bert_comboQA_seed"+seed+".pt"
+model = torch.load(model_path, map_location=device)
+model.eval().to(device)
+
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+
+prompt = "In what country is Normandy located"
+#prompt = "When were the Normans in Normandy"
+response = "The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse (Norman comes from Norseman) raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries."
+combo = prompt + " [SEP] " + response
+
+pr_resp = tokenizer.encode(combo, add_special_tokens=True)
+#prompt_ids = tokenizer.encode(prompt, add_special_tokens=True)
+#resp_ids = tokenizer.encode(response, add_special_tokens=True)
+#pr_resp = resp_ids + prompt_ids
+
+pr_resp = torch.tensor(pr_resp).to(device)
+
+embedding_matrix = model.bert.embeddings.word_embeddings
+embedded = torch.tensor(embedding_matrix(pr_resp), requires_grad=True)
+print(embedded)
+print(embedded.size())
+
+start_logits, end_logits, verification_logit = model.saliency(inputs_embeds=torch.unsqueeze(embedded, 0))
+
+#print(rel_logit)
+verification_logit.backward()
+#start_logits.backward()
+#end_logits.backward()
+
+print(embedded.grad)
+
+saliency_max = torch.norm(embedded.grad.data.abs(), dim=1)
+saliency_all = embedded.grad.data.abs()
+saliency_max = saliency_max.detach().cpu().numpy()
+# We don't care about the first and last tokens
+saliency_max = saliency_max[1:-1]
+# Normalise values using softmax
+saliency_max = saliency_max/sum(saliency_max)
+
+words = tokenizer.tokenize(combo)
+print(words)
+"""
+# Plot a bar chart
+M = len(words)
+xx = np.linspace(0, M, M)
+print(len(words))
+print(saliency_max.shape)
+plt.figure(figsize=(40,60))
+plt.barh(xx, list(saliency_max)[::-1])
+plt.yticks(xx, labels=np.flip(words), fontsize=40)
+plt.xticks(fontsize=40)
+plt.ylabel('Response + Prompt')
+plt.title('Salient words identification')
+plt.ylim([-2, M+2])
+plt.savefig('./saliency.png')
+plt.close()
+"""
+saliency_all = saliency_all.detach().cpu().numpy()
+saliency_all = saliency_all[1:-1, :]
+
+# Save the gradient values so that we can average them across 15 seeds
+np.savetxt("/home/alta/relevance/vr311//saliency/verification_seed"+seed+".txt", saliency_all)
+with open("./saliency/words.txt", "w") as output:
+    for row in words:
+        output.write(str(row) + '\n')
+
+                                                                                                                                                                                                """
+# Try and plot a heatmap
+saliency_all = saliency_all.detach().cpu().numpy()
+saliency_all = saliency_all[1:-1, :]
+
+M = len(words)
+plt.figure(figsize=(80, 120))
+plt.imshow(saliency_all)
+xx = np.linspace(0, M, M) * 0.985
+plt.axes().set_aspect(aspect=20)
+plt.yticks(xx, labels=words, fontsize=80)
+plt.colorbar()
+
+plt.savefig('./heatmap.png')
+plt.close()
+"""

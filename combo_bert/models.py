@@ -32,3 +32,20 @@ class BertQA(torch.nn.Module):
         verification_logits = torch.sigmoid(self.classifier(pooled_output))
 
         return start_logits, end_logits, verification_logits
+    
+    def saliency(self, input_embeds):
+
+        outputs = self.bert(inputs_embeds=input_embeds)
+
+        sequence_output = outputs[0]
+        pooled_output = outputs[1]
+        pooled_output = self.dropout(pooled_output)
+
+        logits = self.qa_outputs(sequence_output)
+        start_logits, end_logits = logits.split(1, dim=-1)
+        start_logits = start_logits.squeeze(-1)
+        end_logits = end_logits.squeeze(-1)
+
+        verification_logits = torch.sigmoid(self.classifier(pooled_output))
+
+        return start_logits, end_logits, verification_logits

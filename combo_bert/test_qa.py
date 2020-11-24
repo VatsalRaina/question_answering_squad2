@@ -202,6 +202,7 @@ def main(args):
     np.savetxt(args.predictions_save_path + "labels.txt", labels)
     np.savetxt(args.predictions_save_path + "verification_probs.txt", pred_verification_logits)
 
+    np.savetxt(args.predictions_save_path + "inputs.txt", input_ids.detach().cpu().numpy())
 
 if __name__ == '__main__':
     args = parser.parse_args()

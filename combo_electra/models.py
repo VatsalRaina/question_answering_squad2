@@ -9,7 +9,9 @@ class ElectraClassificationHead(torch.nn.Module):
 
         super(ElectraClassificationHead, self).__init__()
 
-        self.electra = ElectraModel.from_pretrained("google/electra-base-discriminator")
+        electra_base = "google/electra-base-discriminator"
+        electra_large = "google/electra-large-discriminator"
+        self.electra = ElectraModel.from_pretrained(electra_large)
         self.dense = torch.nn.Linear(self.electra.config.hidden_size, self.electra.config.hidden_size)
         self.dropout = torch.nn.Dropout(self.electra.config.hidden_dropout_prob)
         self.out_proj = torch.nn.Linear(self.electra.config.hidden_size, 1)
@@ -29,7 +31,9 @@ class ElectraQA(torch.nn.Module):
 
         super(ElectraQA, self).__init__()
 
-        self.electra = ElectraModel.from_pretrained("google/electra-base-discriminator")
+        electra_base = "google/electra-base-discriminator"
+        electra_large = "google/electra-large-discriminator"
+        self.electra = ElectraModel.from_pretrained(electra_large)
         self.qa_outputs = torch.nn.Linear(self.electra.config.hidden_size, 2)
         self.classifier = ElectraClassificationHead()
         self.dropout = torch.nn.Dropout(self.electra.config.hidden_dropout_prob)

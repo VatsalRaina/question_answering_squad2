@@ -74,7 +74,9 @@ def main(args):
     train_data = load_dataset('squad_v2', split='train')
     print(train_data[1953])
 
-    tokenizer = ElectraTokenizer.from_pretrained('google/electra-base-discriminator', do_lower_case=True)
+    electra_base = "google/electra-base-discriminator"
+    electra_large = "google/electra-large-discriminator"
+    tokenizer = ElectraTokenizer.from_pretrained(electra_large, do_lower_case=True)
 
 
     start_positions_true = []

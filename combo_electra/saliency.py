@@ -22,7 +22,7 @@ def get_default_device():
 
 
 device = get_default_device()
-seed="1"
+seed="2"
 model_path = "/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/seed"+seed+"/electra_comboQA_seed"+seed+".pt"
 model = torch.load(model_path, map_location=device)
 model.eval().to(device)

@@ -22,7 +22,7 @@ def find_sub_list(sl,l):
     return 0,0
 
 def hellinger(a,b):
-    return np.sum(np.where(a != 0.0, a * np.log(a / b), 0))
+    return np.sqrt(np.sum((np.sqrt(p) - np.sqrt(q)) ** 2)) / np.sqrt(2.0)
 
 # Set device
 def get_default_device():

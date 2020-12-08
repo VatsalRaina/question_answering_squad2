@@ -57,14 +57,17 @@ for ex in dev_data:
            break
     prompt, response = ex["question"], ex["context"]
     combo = prompt + " [SEP] " + response
-
+    answers = ex["answers"]["text"]
+    if len(answers)==0:
+        # Ignore the negative examples for now
+        continue
     pr_resp = tokenizer.encode(combo, add_special_tokens=True)
     pr_resp_pt = torch.tensor(pr_resp).to(device)
 
     embedding_matrix = model.electra.embeddings.word_embeddings
     embedded = torch.tensor(embedding_matrix(pr_resp_pt), requires_grad=True)
-    print(embedded)
-    print(embedded.size())
+    # print(embedded)
+    # print(embedded.size())
 
     start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(embedded, 0))
 
@@ -80,7 +83,7 @@ for ex in dev_data:
     sep = words.index("[SEP]")
     saliency_max = saliency_max[sep+1:]
     resp_words = words[sep+1:]
-    print(resp_words)
+    # print(resp_words)
 
     # Normalise values
     saliency_max = saliency_max / np.sum(saliency_max)
@@ -91,11 +94,6 @@ for ex in dev_data:
 
     # Construct true distribution
     true_dist = [0.0] * len(resp_words)
-    answers = ex["answers"]["text"]
-    if len(answers)==0:
-        # Ignore the negative examples for now
-        continue
-
     for ans in answers:
         ans_tok = tokenizer.tokenize(ans)
         s_idx, e_idx = find_sub_list(ans_tok, resp_words)

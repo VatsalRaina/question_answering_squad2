@@ -86,10 +86,10 @@ uni_dist = [1.0] * len(resp_words)
 uni_dist = np.asarray(uni_dist)
 uni_dist = uni_dist / np.sum(uni_dist)
 
-kl_saliency_true = KL(saliency_max, true_dist)
+kl_saliency_true = KL(true_dist, saliency_max)
 print("Saliency KL:")
 print(kl_saliency_true)
-kl_uni_true = KL(uni_dist, true_dist)
+kl_uni_true = KL(true_dist, uni_dist)
 print("Uniform KL")
 print(kl_uni_true)
 

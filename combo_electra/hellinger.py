@@ -21,7 +21,7 @@ def find_sub_list(sl,l):
     # Coudln't find the sub-list
     return 0,0
 
-def hellinger(a,b):
+def hellinger(p,q):
     return np.sqrt(np.sum((np.sqrt(p) - np.sqrt(q)) ** 2)) / np.sqrt(2.0)
 
 # Set device

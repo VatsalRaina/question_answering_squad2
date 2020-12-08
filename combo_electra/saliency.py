@@ -10,7 +10,14 @@ import matplotlib
 matplotlib.use('agg')
 from matplotlib import pyplot as plt
 
+from datasets import load_dataset
 from models import ElectraQA
+
+def find_sub_list(sl,l):
+    sll=len(sl)
+    for ind in (i for i,e in enumerate(l) if e==sl[0]):
+        if l[ind:ind+sll]==sl:
+            return ind,ind+sll-1
 
 def KL(a,b):
     return np.sum(np.where(a != 0.0, a * np.log(a / b), 0))
@@ -32,115 +39,118 @@ model.eval().to(device)
 
 tokenizer = ElectraTokenizer.from_pretrained('google/electra-base-discriminator', do_lower_case=True)
 
-prompt = "In what country is Normandy located"
-#prompt = "When were the Normans in Normandy"
-response = "The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse (Norman comes from Norseman) raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries."
+# prompt = "In what country is Normandy located"
+# #prompt = "When were the Normans in Normandy"
+# response = "The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse (Norman comes from Norseman) raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries."
 
 #prompt = "What name is given to any prime number larger than 2"
 #response = "Hence, 6 is not prime. The image at the right illustrates that 12 is not prime: 12 = 3 · 4. No even number greater than 2 is prime because by definition, any such number n has at least three distinct divisors, namely 1, 2, and n. This implies that n is not prime. Accordingly, the term odd prime refers to any prime number greater than 2. Similarly, when written in the usual decimal system, all prime numbers larger than 5 end in 1, 3, 7, or 9, since even numbers are multiples of 2 and numbers ending in 0 or 5 are multiples of 5."
 
-combo = prompt + " [SEP] " + response
+dev_data = load_dataset('squad_v2', split='validation')
 
-pr_resp = tokenizer.encode(combo, add_special_tokens=True)
-pr_resp_pt = torch.tensor(pr_resp).to(device)
+kl_saliency_true_all = []
+kl_uni_true_all = []
+count=0
+for ex in dev_data:
+    count+=1
+    if count==13:
+           break
+    prompt, response = ex["question"], ex["context"]
+    combo = prompt + " [SEP] " + response
 
-embedding_matrix = model.electra.embeddings.word_embeddings
-embedded = torch.tensor(embedding_matrix(pr_resp_pt), requires_grad=True)
-print(embedded)
-print(embedded.size())
+    pr_resp = tokenizer.encode(combo, add_special_tokens=True)
+    pr_resp_pt = torch.tensor(pr_resp).to(device)
 
-start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(embedded, 0))
+    embedding_matrix = model.electra.embeddings.word_embeddings
+    embedded = torch.tensor(embedding_matrix(pr_resp_pt), requires_grad=True)
+    print(embedded)
+    print(embedded.size())
 
-#print(rel_logit)
-verification_logit.backward()
-#torch.sum(start_logits).backward()
-#torch.sum(end_logits).backward()
+    start_logits, end_logits, verification_logit = model.saliency(torch.unsqueeze(embedded, 0))
 
-saliency_max = torch.norm(embedded.grad.data.abs(), dim=1)
-saliency_max = saliency_max.detach().cpu().numpy()
-# We don't care about the first and last tokens
-saliency_max = saliency_max[1:-1]
+    verification_logit.backward()
 
-# Extract only the response words
-words = tokenizer.tokenize(combo)
-sep = words.index("[SEP]")
-saliency_max = saliency_max[sep+1:]
-resp_words = words[sep+1:]
-print(resp_words)
+    saliency_max = torch.norm(embedded.grad.data.abs(), dim=1)
+    saliency_max = saliency_max.detach().cpu().numpy()
+    # We don't care about the first and last tokens
+    saliency_max = saliency_max[1:-1]
 
-# Normalise values
-saliency_max = saliency_max / np.sum(saliency_max)
+    # Extract only the response words
+    words = tokenizer.tokenize(combo)
+    sep = words.index("[SEP]")
+    saliency_max = saliency_max[sep+1:]
+    resp_words = words[sep+1:]
+    print(resp_words)
 
-# Get KL divergence values
+    # Normalise values
+    saliency_max = saliency_max / np.sum(saliency_max)
 
-# Get KL divergence with true labels
-true_dist = [0.0] * len(resp_words)
-true_idx = resp_words.index("france")
-true_dist[true_idx] = 1.0
+    # Get KL divergence values
 
-true_dist = np.asarray(true_dist)
+    # Get KL divergence with true labels
 
-true_dist = true_dist / np.sum(true_dist)
+    # Construct true distribution
+    true_dist = [0.0] * len(resp_words)
+    answers = ex["answers"]["text"]
+    if len(answers)==0:
+        # Ignore the negative examples for now
+        continue
 
-uni_dist = [1.0] * len(resp_words)
-uni_dist = np.asarray(uni_dist)
-uni_dist = uni_dist / np.sum(uni_dist)
+    for ans in answers:
+        ans_tok = tokenizer.tokenize(ans)
+        s_idx, e_idx = find_sub_list(ans_tok, resp_words)
+        for idx in range(s_idx, e_idx+1):
+            true_dist[idx] = 1.0
 
-kl_saliency_true = KL(true_dist, saliency_max)
-print("Saliency KL:")
-print(kl_saliency_true)
-kl_uni_true = KL(true_dist, uni_dist)
-print("Uniform KL")
-print(kl_uni_true)
+    # true_idx = resp_words.index("france")
+    # true_dist[true_idx] = 1.0
 
+    true_dist = np.asarray(true_dist)
 
+    true_dist = true_dist / np.sum(true_dist)
 
-"""
-# Plot a bar chart
-M = len(words)
-xx = np.linspace(0, M, M)
-print(len(words))
-print(saliency_max.shape)
-plt.figure(figsize=(40,60))
-plt.barh(xx, list(saliency_max)[::-1])
-plt.yticks(xx, labels=np.flip(words), fontsize=40)
-plt.xticks(fontsize=40)
-plt.ylabel('Response + Prompt')
-plt.title('Salient words identification')
-plt.ylim([-2, M+2])
-plt.savefig('./saliency.png')
-plt.close()
-"""
-# saliency_all = saliency_all.detach().cpu().numpy()
-# saliency_all = saliency_all[1:-1, :]
-"""
-# Save the gradient values so that we can average them across 15 seeds
-np.savetxt("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/saliency/verification_seed"+seed+".txt", saliency_all)
-with open("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/saliency/words.txt", "w") as output:
-    for row in words:
-        output.write(str(row) + '\n')
-                                                                                     
+    uni_dist = [1.0] * len(resp_words)
+    uni_dist = np.asarray(uni_dist)
+    uni_dist = uni_dist / np.sum(uni_dist)
 
-# Try and plot a heatmap
-saliency_all = saliency_all.detach().cpu().numpy()
-saliency_all = saliency_all[1:-1, :]
+    kl_saliency_true = KL(true_dist, saliency_max)
+    kl_saliency_true_all.append(kl_saliency_true)
+    print("Saliency KL:")
+    print(kl_saliency_true)
+    kl_uni_true = KL(true_dist, uni_dist)
+    kl_uni_true_all.append(kl_uni_true)
+    print("Uniform KL")
+    print(kl_uni_true)
 
-M = len(words)
-plt.figure(figsize=(80, 120))
-plt.imshow(saliency_all)
-xx = np.linspace(0, M, M) * 0.985
-plt.axes().set_aspect(aspect=20)
-plt.yticks(xx, labels=words, fontsize=80)
-plt.colorbar()
+kl_saliency_true_all = np.array(kl_saliency_true_all)
+kl_uni_true_all = np.array(kl_uni_true_all)
 
-plt.savefig('./heatmap.png')
-plt.close()
-"""
+print("Saliency:")
 
-# print the predicted answer to the question:
-start_logits = start_logits.detach().cpu().numpy()
-end_logits = end_logits.detach().cpu().numpy()
-print("Start position: ")
-print(np.argmax(start_logits))
-print("End position: ")
-print(np.argmax(end_logits))
+r1 = np.mean(kl_saliency_true_all) 
+print("Mean: ", r1) 
+  
+r2 = np.std(kl_saliency_true_all) 
+print("std: ", r2) 
+  
+r3 = np.var(kl_saliency_true_all) 
+print("variance: ", r3)
+
+print("Uniform:")
+
+r1 = np.mean(kl_uni_true_all) 
+print("Mean: ", r1) 
+  
+r2 = np.std(kl_uni_true_all) 
+print("std: ", r2) 
+  
+r3 = np.var(kl_uni_true_all) 
+print("variance: ", r3)
+
+# # print the predicted answer to the question:
+# start_logits = start_logits.detach().cpu().numpy()
+# end_logits = end_logits.detach().cpu().numpy()
+# print("Start position: ")
+# print(np.argmax(start_logits))
+# print("End position: ")
+# print(np.argmax(end_logits))

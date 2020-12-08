@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 
 from models import ElectraQA
 
+def KL(a,b):
+    return np.sum(np.where(a != 0.0, a * np.log(a / b), 0))
+
 # Set device
 def get_default_device():
     if torch.cuda.is_available():
@@ -65,8 +68,32 @@ saliency_max = saliency_max[sep+1:]
 resp_words = words[sep+1:]
 print(resp_words)
 
-# Normalise values using softmax
-saliency_max = saliency_max/sum(saliency_max)
+# Normalise values
+saliency_max = saliency_max / np.sum(saliency_max)
+
+# Get KL divergence values
+
+# Get KL divergence with true labels
+true_dist = [0.0] * len(resp_words)
+true_idx = resp_words.index("france")
+true_dist[true_idx] = 1.0
+
+true_dist = np.asarray(true_dist)
+
+true_dist = true_dist / np.sum(true_dist)
+
+uni_dist = [1.0] * len(resp_words)
+uni_dist = np.asarray(uni_dist)
+uni_dist = uni_dist / np.sum(uni_dist)
+
+kl_saliency_true = KL(true_dist, saliency_max)
+print("Saliency KL:")
+print(kl_saliency_true)
+kl_uni_true = KL(uni_dist, saliency_max)
+print("Uniform KL")
+print(kl_uni_true)
+
+
 
 """
 # Plot a bar chart

@@ -53,8 +53,9 @@ kl_uni_true_all = []
 count=0
 for ex in dev_data:
     count+=1
-    if count==13:
-           break
+    print('\n'+str(count))
+    # if count==13:
+    #        break
     prompt, response = ex["question"], ex["context"]
     combo = prompt + " [SEP] " + response
     answers = ex["answers"]["text"]
@@ -62,6 +63,9 @@ for ex in dev_data:
         # Ignore the negative examples for now
         continue
     pr_resp = tokenizer.encode(combo, add_special_tokens=True)
+    if len(pr_resp) > 512:
+        # Ignore long ones for now
+        continue
     pr_resp_pt = torch.tensor(pr_resp).to(device)
 
     embedding_matrix = model.electra.embeddings.word_embeddings

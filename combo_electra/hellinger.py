@@ -55,9 +55,9 @@ hell_uni_true_all = []
 count=0
 for ex in dev_data:
     count+=1
-    # print('\n'+str(count))
+    print('\n'+str(count))
     # if count==13:
-           break
+    #        break
     prompt, response = ex["question"], ex["context"]
     combo = prompt + " [SEP] " + response
     answers = ex["answers"]["text"]

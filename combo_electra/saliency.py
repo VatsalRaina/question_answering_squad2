@@ -18,6 +18,8 @@ def find_sub_list(sl,l):
     for ind in (i for i,e in enumerate(l) if e==sl[0]):
         if l[ind:ind+sll]==sl:
             return ind,ind+sll-1
+    # Coudln't find the sub-list
+    return 0,0
 
 def KL(a,b):
     return np.sum(np.where(a != 0.0, a * np.log(a / b), 0))

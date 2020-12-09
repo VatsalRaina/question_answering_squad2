@@ -99,7 +99,7 @@ for ex in dev_data:
 
     # Identify content words in prompt and then de-weight the saliency values for these words in response
     content_words = [w for w in prompt_words if w.casefold() not in stop_words]
-    idx_to_remove, _ = [(i, w) for i, w in enumerate(resp_words) if w in content_words]
+    idx_to_remove = [i for i, w in enumerate(resp_words) if w in content_words]
     for idx in idx_to_remove:
         saliency_max[idx] = 0.0
 

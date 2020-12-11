@@ -84,7 +84,7 @@ def main(args):
     # Convert to torch tensors
     input_ids = torch.tensor(input_ids)
     input_ids = input_ids.long().to(device)
-    # Create the DataLoader for training set.
+    # Create the DataLoader for test set.
     ds = TensorDataset(input_ids)
     dl = DataLoader(ds, batch_size=args.batch_size, shuffle=False)
 
@@ -95,6 +95,7 @@ def main(args):
     count = 0
     for inp_id in dl:
         print(count)
+        print(inp_id)
         count+=1
         inp_id = inp_id.to(device)
         with torch.no_grad():

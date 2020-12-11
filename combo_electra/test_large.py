@@ -104,7 +104,6 @@ def main(args):
         b_end_logits = torch.squeeze(end_logits).detach().cpu().numpy().tolist()
         pred_end_logits += b_end_logits
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
-    print(pred_start_logits)
     # Save all necessary file (in order to be able to ensemble)
     np.savetxt(args.predictions_save_path + "pred_start_logits_all.txt", pred_start_logits)
     np.savetxt(args.predictions_save_path + "pred_end_logits_all.txt", pred_end_logits)

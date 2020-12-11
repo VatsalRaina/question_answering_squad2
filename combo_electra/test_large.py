@@ -99,7 +99,7 @@ def main(args):
         inp_id = item[0].to(device)
         with torch.no_grad():
             start_logits, end_logits = model(inp_id)
-        print(b_start_logits.shape)
+        print(start_logits.shape)
         b_start_logits = torch.squeeze(start_logits).detach().cpu().numpy().tolist()
         # pred_start_logits += b_start_logits
         b_end_logits = torch.squeeze(end_logits).detach().cpu().numpy().tolist()

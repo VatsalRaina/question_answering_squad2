@@ -100,6 +100,7 @@ def main(args):
         with torch.no_grad():
             start_logits, end_logits = model(inp_id)
         b_start_logits = torch.squeeze(start_logits).detach().cpu().numpy().tolist()
+        print(b_start_logits.shape)
         # pred_start_logits += b_start_logits
         b_end_logits = torch.squeeze(end_logits).detach().cpu().numpy().tolist()
         if len(pred_start_logits)==0:

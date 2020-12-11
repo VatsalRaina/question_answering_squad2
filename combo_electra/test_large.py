@@ -70,8 +70,8 @@ def main(args):
     count = 0
     for ex in dev_data:
         count+=1
-        if count==18:
-           break
+        # if count==18:
+        #    break
         question, passage = ex["question"], ex["context"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]

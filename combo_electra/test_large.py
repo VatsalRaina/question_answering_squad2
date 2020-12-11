@@ -70,8 +70,8 @@ def main(args):
     count = 0
     for ex in dev_data:
         count+=1
-        if count==18:
-           break
+        # if count==18:
+        #    break
         question, passage = ex["question"], ex["context"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]
@@ -99,7 +99,6 @@ def main(args):
         inp_id = item[0].to(device)
         with torch.no_grad():
             start_logits, end_logits = model(inp_id)
-        print(start_logits.shape)
         b_start_logits = start_logits.detach().cpu().numpy().tolist()
         # pred_start_logits += b_start_logits
         b_end_logits = end_logits.detach().cpu().numpy().tolist()

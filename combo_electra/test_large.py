@@ -107,8 +107,8 @@ def main(args):
             pred_start_logits += b_start_logits
             pred_end_logits += b_end_logits
         else:
-            pred_start_logits = pred_start_logits.extend(b_start_logits)
-            pred_end_logits = pred_end_logits.extend(b_end_logits)
+            pred_start_logits.extend(b_start_logits)
+            pred_end_logits.extend(b_end_logits)
         # pred_end_logits += b_end_logits
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
     # Save all necessary file (in order to be able to ensemble)

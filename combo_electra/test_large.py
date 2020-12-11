@@ -70,8 +70,8 @@ def main(args):
     count = 0
     for ex in dev_data:
         count+=1
-        # if count==18:
-        #    break
+        if count==18:
+           break
         question, passage = ex["question"], ex["context"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]
@@ -102,7 +102,8 @@ def main(args):
         b_start_logits = torch.squeeze(start_logits).detach().cpu().numpy().tolist()
         pred_start_logits += b_start_logits
         b_end_logits = torch.squeeze(end_logits).detach().cpu().numpy().tolist()
-        pred_end_logits += b_end_logits
+        pred_end_logits = pred_end_logits.extend(b_end_logits)
+        # pred_end_logits += b_end_logits
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
     # Save all necessary file (in order to be able to ensemble)
     np.savetxt(args.predictions_save_path + "pred_start_logits_all.txt", pred_start_logits)

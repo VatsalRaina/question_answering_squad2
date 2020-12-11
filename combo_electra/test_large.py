@@ -93,11 +93,10 @@ def main(args):
     pred_start_logits = []
     pred_end_logits = []
     count = 0
-    for inp_id in dl:
+    for item in dl:
         print(count)
-        print(inp_id)
         count+=1
-        inp_id = inp_id.to(device)
+        inp_id = item[0].to(device)
         with torch.no_grad():
             start_logits, end_logits = model(inp_id)
         b_start_logits = torch.squeeze(start_logits).detach().cpu().numpy().tolist()

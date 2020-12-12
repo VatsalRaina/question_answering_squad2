@@ -44,7 +44,7 @@ def main(args):
     # entropy_off = []
     pred_start_probs = []
     pred_end_probs = []
-    for ex in dev_data:
+    for ex in dev_data[3105:]:
         count+=1
         print(count)
         # if count==2:
@@ -53,6 +53,7 @@ def main(args):
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"].tolist()[0]
         if len(inp_ids) > 512:
+            print("in here")
             inputs["input_ids"] = inputs["input_ids"][:,:512]
         start_logits, end_logits = model(**inputs)
         answer_start = torch.argmax(start_logits)

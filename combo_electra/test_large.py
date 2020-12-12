@@ -44,10 +44,11 @@ def main(args):
     # entropy_off = []
     pred_start_probs = []
     pred_end_probs = []
-    for ex in dev_data[3105:]:
-        print(ex)
+    for ex in dev_data:
         count+=1
         print(count)
+        if count<3105:
+            continue
         # if count==2:
         #    break
         question, passage, qid = ex["question"], ex["context"], ex["id"]

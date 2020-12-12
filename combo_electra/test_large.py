@@ -65,12 +65,12 @@ def main(args):
 
         if len(ex["answers"]["text"])==0:
             entropy_off.append(entrop)
+            print(question)
+            print(passage)
+            print(ex["answers"]["text"])
+            print(answer)
         else:
             entropy_on.append(entrop)
-            # print(question)
-            # print(passage)
-            # print(ex["answers"]["text"])
-            # print(answer)
     print(entropy_on)
     print(entropy_off)
 

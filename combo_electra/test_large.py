@@ -68,7 +68,7 @@ def main(args):
         # print(entrop)
 
         if len(ex["answers"]["text"])==0:
-            # entropy_off.append(entrop)
+            entropy_off.append(entrop)
             # print(question)
             # print(passage)
             # print(ex["answers"]["text"])

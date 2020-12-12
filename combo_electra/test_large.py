@@ -35,7 +35,7 @@ def main(args):
 
     electrasquad2 = "ahotrod/electra_large_discriminator_squad2_512"
     electrasquad1 = "mrm8488/electra-large-finetuned-squadv1"
-    huggingface_model = electrasquad1
+    huggingface_model = electrasquad2
     tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
     model = AutoModelForQuestionAnswering.from_pretrained(huggingface_model)
     count = 0
@@ -47,12 +47,15 @@ def main(args):
     for ex in dev_data:
         count+=1
         print(count)
-        # if count==100:
-        #    break
+        if count==2:
+           break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]
- 
+        print(inputs["input_ids"].shape)
+        print(inputs["position_ids"].shape)
+        print(inputs["token_type_ids"].shape)
+        print(inputs["input_embeds"].shape)
         start_logits, end_logits = model(**inputs)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)

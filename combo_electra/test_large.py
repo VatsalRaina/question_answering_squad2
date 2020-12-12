@@ -6,6 +6,7 @@ import sys
 
 import torch
 import numpy as np
+from scipy.stats import entropy
 
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering

@@ -5,14 +5,9 @@ import os
 import sys
 
 import torch
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import numpy as np
-import random
-import time
-import datetime
 
 from datasets import load_dataset
-from keras.preprocessing.sequence import pad_sequences
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
 
@@ -23,34 +18,6 @@ parser.add_argument('--batch_size', type=int, default=32, help='Specify the trai
 parser.add_argument('--predictions_save_path', type=str, help="Where to save predicted values")
 
 
-def format_time(elapsed):
-    '''
-    Takes a time in seconds and returns a string hh:mm:ss
-    '''
-    # Round to the nearest second.
-    elapsed_rounded = int(round((elapsed)))
-
-    # Format as hh:mm:ss
-    return str(datetime.timedelta(seconds=elapsed_rounded))
-
-# Set device
-def get_default_device():
-    # Force return cpu
-    # return torch.device('cpu')
-    if torch.cuda.is_available():
-        print("Got CUDA!")
-        return torch.device('cuda')
-    else:
-        return torch.device('cpu')
-
-def _find_sub_list(sl,l):
-    sll=len(sl)
-    for ind in (i for i,e in enumerate(l) if e==sl[0]):
-        if l[ind:ind+sll]==sl:
-            return ind,ind+sll-1
-    print("Didn't find match, return <no answer>")
-    return -1,0
-
 def main(args):
     if not os.path.isdir('CMDs'):
         os.mkdir('CMDs')
@@ -58,20 +25,21 @@ def main(args):
         f.write(' '.join(sys.argv) + '\n')
         f.write('--------------------------------\n')
 
-    # Choose device
-    device = get_default_device()
-
     dev_data = load_dataset('squad_v2', split='validation')
     print(len(dev_data))
 
     tokenizer = AutoTokenizer.from_pretrained("ahotrod/electra_large_discriminator_squad2_512")
     model = AutoModelForQuestionAnswering.from_pretrained("ahotrod/electra_large_discriminator_squad2_512")
     count = 0
+    span_predictions = {}
+    entropy_on = []
+    entropy_off = []
     for ex in dev_data:
         count+=1
+        print(count)
         if count==10:
            break
-        question, passage = ex["question"], ex["context"]
+        question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]
  
@@ -79,13 +47,27 @@ def main(args):
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
         answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inp_ids[answer_start:answer_end+1]))
+        
+        span_predictions[qid] = answer
 
-        if len(ex["answers"]["text"])!=0:
-            print(question)
-            print(passage)
-            print(ex["answers"]["text"])
-            print(answer)
+        start_logits = start_logits.detach().cpu().numpy()
+        end_logits = end_logits.detach().cpu().numpy()
 
+        start_probs = start_logits / np.sum(start_logits)
+        end_probs = end_logits / np.sum(end_logits)
+
+        entrop = (entropy(start_probs, base=2) + entropy(end_probs, base=2)) / 2
+
+        if len(ex["answers"]["text"])==0:
+            entropy_off.append(entrop)
+        else:
+            entropy_on.append(entrop)
+            # print(question)
+            # print(passage)
+            # print(ex["answers"]["text"])
+            # print(answer)
+    print(entropy_on)
+    print(entropy_off)
 
 
     # pred_start_logits = []

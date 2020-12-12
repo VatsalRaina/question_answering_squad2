@@ -64,7 +64,9 @@ def main(args):
         start_probs = start_logits / np.sum(start_logits)
         end_probs = end_logits / np.sum(end_logits)
 
-        entrop = (entropy(start_probs, base=2) + entropy(end_probs, base=2)) / 2
+        sep = tokenizer.convert_ids_to_tokens(inp_ids).index("[SEP]")
+
+        entrop = ((entropy(start_probs[sep+1:-1], base=2) + entropy(end_probs[sep+1:-1], base=2)) / 2) / len(start_probs[sep+1:-1])
         # print(entrop)
 
         if len(ex["answers"]["text"])==0:

@@ -61,7 +61,7 @@ def main(args):
         end_probs = end_logits / np.sum(end_logits)
 
         entrop = (entropy(start_probs, base=2) + entropy(end_probs, base=2)) / 2
-        print(entrop)
+        # print(entrop)
 
         if len(ex["answers"]["text"])==0:
             entropy_off.append(entrop)
@@ -71,8 +71,8 @@ def main(args):
             # print(passage)
             # print(ex["answers"]["text"])
             # print(answer)
-    # print(entropy_on)
-    # print(entropy_off)
+    print(entropy_on)
+    print(entropy_off)
 
 
     # pred_start_logits = []

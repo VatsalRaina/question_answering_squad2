@@ -57,6 +57,7 @@ def main(args):
         if len(inp_ids) > 512:
             print("in here")
             inputs["input_ids"] = inputs["input_ids"][:,:512]
+            inp_ids = inp_ids[:,:512]
         # start_logits, end_logits = model(**inputs)
         start_logits, end_logits = model(input_ids=inp_ids)
         answer_start = torch.argmax(start_logits)

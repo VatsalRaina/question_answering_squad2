@@ -51,13 +51,14 @@ def main(args):
         
         span_predictions[qid] = answer
 
-        start_logits = start_logits.detach().cpu().numpy()
-        end_logits = end_logits.detach().cpu().numpy()
+        start_logits = torch.squeeze(start_logits).detach().cpu().numpy()
+        end_logits = torch.squeeze(end_logits).detach().cpu().numpy()
 
         start_probs = start_logits / np.sum(start_logits)
         end_probs = end_logits / np.sum(end_logits)
 
         entrop = (entropy(start_probs, base=2) + entropy(end_probs, base=2)) / 2
+        print(entrop)
 
         if len(ex["answers"]["text"])==0:
             entropy_off.append(entrop)
@@ -67,8 +68,8 @@ def main(args):
             # print(passage)
             # print(ex["answers"]["text"])
             # print(answer)
-    print(entropy_on)
-    print(entropy_off)
+    # print(entropy_on)
+    # print(entropy_off)
 
 
     # pred_start_logits = []

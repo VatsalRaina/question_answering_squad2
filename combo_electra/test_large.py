@@ -53,7 +53,7 @@ def main(args):
         #    break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
-        inp_ids = inputs["input_ids"].tolist()[0]
+        inp_ids = inputs["input_ids"]
         if len(inp_ids) > 512:
             print("in here")
             inputs["input_ids"] = inputs["input_ids"][:,:512]
@@ -61,6 +61,7 @@ def main(args):
         start_logits, end_logits = model(input_ids=inp_ids)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
+        inp_ids = inputs["input_ids"].tolist()[0]
         answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inp_ids[answer_start:answer_end+1]))
         if answer == "[CLS]":
             answer = ""

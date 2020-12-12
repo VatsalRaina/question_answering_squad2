@@ -18,6 +18,9 @@ parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
 parser.add_argument('--predictions_save_path', type=str, help="Where to save predicted values")
 
+def sig(x):
+    return 1/(1+np.exp(-x))
+
 
 def main(args):
     if not os.path.isdir('CMDs'):
@@ -51,8 +54,8 @@ def main(args):
         
         span_predictions[qid] = answer
 
-        start_logits = torch.squeeze(start_logits).detach().cpu().numpy()
-        end_logits = torch.squeeze(end_logits).detach().cpu().numpy()
+        start_logits = sig(torch.squeeze(start_logits).detach().cpu().numpy())
+        end_logits = sig(torch.squeeze(end_logits).detach().cpu().numpy())
 
         start_probs = start_logits / np.sum(start_logits)
         end_probs = end_logits / np.sum(end_logits)

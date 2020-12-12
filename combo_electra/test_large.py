@@ -66,7 +66,11 @@ def main(args):
 
         sep = tokenizer.convert_ids_to_tokens(inp_ids).index("[SEP]")
 
-        entrop = ((entropy(start_probs[sep+1:-1], base=2) + entropy(end_probs[sep+1:-1], base=2)) / 2) / len(start_probs[sep+1:-1])
+        resp_start = start_probs[sep+1:-1] / np.sum(start_probs[sep+1:-1])
+        resp_end = end_probs[sep+1:-1] / np.sum(end_probs[sep+1:-1])
+
+
+        entrop = ((entropy(resp_start, base=2) + entropy(resp_end, base=2)) / 2) / len(resp_start)
         # print(entrop)
 
         if len(ex["answers"]["text"])==0:
@@ -77,8 +81,8 @@ def main(args):
             # print(answer)
         else:
             entropy_on.append(entrop)
-    print(entropy_on)
-    print(entropy_off)
+    print(np.mean(entropy_on))
+    print(np.mean(entropy_off))
 
 
     # pred_start_logits = []

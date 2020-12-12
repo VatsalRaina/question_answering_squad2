@@ -45,6 +45,7 @@ def main(args):
     pred_start_probs = []
     pred_end_probs = []
     for ex in dev_data[3105:]:
+        print(ex)
         count+=1
         print(count)
         # if count==2:

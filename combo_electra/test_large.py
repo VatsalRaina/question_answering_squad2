@@ -39,13 +39,15 @@ def main(args):
     model = AutoModelForQuestionAnswering.from_pretrained(huggingface_model)
     count = 0
     span_predictions = {}
-    entropy_on = []
-    entropy_off = []
+    # entropy_on = []
+    # entropy_off = []
+    pred_start_probs = []
+    pred_end_probs = []
     for ex in dev_data:
         count+=1
         print(count)
-        if count==100:
-           break
+        # if count==100:
+        #    break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
         inp_ids = inputs["input_ids"].tolist()[0]
@@ -58,31 +60,38 @@ def main(args):
             answer = ""
         span_predictions[qid] = answer
 
+        """
         start_logits = sig(torch.squeeze(start_logits).detach().cpu().numpy())
         end_logits = sig(torch.squeeze(end_logits).detach().cpu().numpy())
 
         start_probs = start_logits / np.sum(start_logits)
         end_probs = end_logits / np.sum(end_logits)
 
+        
         sep = tokenizer.convert_ids_to_tokens(inp_ids).index("[SEP]")
 
         resp_start = start_probs[sep+1:-1] / np.sum(start_probs[sep+1:-1])
         resp_end = end_probs[sep+1:-1] / np.sum(end_probs[sep+1:-1])
-
+        
 
         entrop = ((entropy(resp_start, base=2) + entropy(resp_end, base=2)) / 2) / len(resp_start)
         # print(entrop)
+        """
 
-        if len(ex["answers"]["text"])==0:
-            entropy_off.append(entrop)
-            # print(question)
-            # print(passage)
-            # print(ex["answers"]["text"])
-            # print(answer)
-        else:
-            entropy_on.append(entrop)
-    print(np.mean(entropy_on))
-    print(np.mean(entropy_off))
+    with open(args.predictions_save_path + "predictions.json", 'w') as fp:
+        json.dump(span_predictions, fp)
+
+
+    #     if len(ex["answers"]["text"])==0:
+    #         entropy_off.append(entrop)
+    #         # print(question)
+    #         # print(passage)
+    #         # print(ex["answers"]["text"])
+    #         # print(answer)
+    #     else:
+    #         entropy_on.append(entrop)
+    # print(np.mean(entropy_on))
+    # print(np.mean(entropy_off))
 
 
     # pred_start_logits = []

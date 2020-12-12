@@ -54,7 +54,7 @@ def main(args):
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"]
-        if len(inp_ids) > 512:
+        if inp_ids.shape[1] > 512:
             print("in here")
             inputs["input_ids"] = inputs["input_ids"][:,:512]
             inp_ids = inp_ids[:,:512]

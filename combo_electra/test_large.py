@@ -50,12 +50,10 @@ def main(args):
         if count==2:
            break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
-        inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")
+        inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"].tolist()[0]
-        print(inputs["input_ids"].shape)
-        print(inputs["position_ids"].shape)
-        print(inputs["token_type_ids"].shape)
-        print(inputs["input_embeds"].shape)
+        if len(inp_ids) > 512:
+            inputs["input_ids"] = inputs["input_ids"][:,:512]
         start_logits, end_logits = model(**inputs)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)

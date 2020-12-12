@@ -44,7 +44,7 @@ def main(args):
     for ex in dev_data:
         count+=1
         print(count)
-        if count==30:
+        if count==100:
            break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")

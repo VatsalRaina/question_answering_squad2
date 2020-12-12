@@ -32,8 +32,11 @@ def main(args):
     dev_data = load_dataset('squad_v2', split='validation')
     print(len(dev_data))
 
-    tokenizer = AutoTokenizer.from_pretrained("ahotrod/electra_large_discriminator_squad2_512")
-    model = AutoModelForQuestionAnswering.from_pretrained("ahotrod/electra_large_discriminator_squad2_512")
+    electrasquad2 = "ahotrod/electra_large_discriminator_squad2_512"
+    electrasquad1 = "mrm8488/electra-large-finetuned-squadv1"
+    huggingface_model = electrasquad1
+    tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
+    model = AutoModelForQuestionAnswering.from_pretrained(huggingface_model)
     count = 0
     span_predictions = {}
     entropy_on = []
@@ -51,7 +54,8 @@ def main(args):
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
         answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inp_ids[answer_start:answer_end+1]))
-        
+        if answer == "[CLS]":
+            answer = ""
         span_predictions[qid] = answer
 
         start_logits = sig(torch.squeeze(start_logits).detach().cpu().numpy())
@@ -64,11 +68,11 @@ def main(args):
         # print(entrop)
 
         if len(ex["answers"]["text"])==0:
-            entropy_off.append(entrop)
-            print(question)
-            print(passage)
-            print(ex["answers"]["text"])
-            print(answer)
+            # entropy_off.append(entrop)
+            # print(question)
+            # print(passage)
+            # print(ex["answers"]["text"])
+            # print(answer)
         else:
             entropy_on.append(entrop)
     print(entropy_on)

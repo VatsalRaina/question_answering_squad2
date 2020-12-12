@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import math
+import pickle
 
 import torch
 import numpy as np
@@ -48,10 +49,10 @@ def main(args):
     for ex in dev_data:
         count+=1
         print(count)
-        if count<3105:
-            continue
-        if count==3200:
-           break
+        # if count<3105:
+        #     continue
+        # if count==3200:
+        #     break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"]
@@ -61,8 +62,8 @@ def main(args):
             inp_ids = inp_ids[:,:512]
         # start_logits, end_logits = model(**inputs)
         start_logits, end_logits = model(input_ids=inp_ids)
-        answer_start = torch.argmax(start_logits)
-        answer_end = torch.argmax(end_logits)
+        # answer_start = torch.argmax(start_logits)
+        # answer_end = torch.argmax(end_logits)
         inp_ids = inputs["input_ids"].tolist()[0]
         # answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inp_ids[answer_start:answer_end+1]))
         # if answer == "[CLS]":
@@ -76,6 +77,8 @@ def main(args):
         start_probs = start_logits / np.sum(start_logits)
         end_probs = end_logits / np.sum(end_logits)
 
+        pred_start_probs.append(start_probs)
+        pred_end_probs.append(end_probs)
         
         sep = tokenizer.convert_ids_to_tokens(inp_ids).index("[SEP]")
 
@@ -100,7 +103,14 @@ def main(args):
         else:
             entropy_on.append(entrop)
     print(np.mean(entropy_on))
+    print(np.std(entropy_on))
     print(np.mean(entropy_off))
+    print(np.std(entropy_off))
+
+    with open(args.predictions_save_path +"start_probs.txt", "wb") as fp:      
+        pickle.dump(pred_start_probs, fp)
+    with open(args.predictions_save_path +"end_probs.txt", "wb") as fp:      
+        pickle.dump(pred_end_probs, fp)
 
 
     # pred_start_logits = []

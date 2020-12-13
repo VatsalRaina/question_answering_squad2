@@ -35,7 +35,7 @@ def main(args):
 
     electrasquad2 = "ahotrod/electra_large_discriminator_squad2_512"
     electrasquad1 = "mrm8488/electra-large-finetuned-squadv1"
-    huggingface_model = electrasquad2
+    huggingface_model = electrasquad1
     tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
     model = AutoModelForQuestionAnswering.from_pretrained(huggingface_model)
     count = 0
@@ -86,7 +86,7 @@ def main(args):
         # print(entrop)
         """
 
-    with open(args.predictions_save_path + "predictions.json", 'w') as fp:
+    with open(args.predictions_save_path + "predictions_squad1.json", 'w') as fp:
         json.dump(span_predictions, fp)
 
 

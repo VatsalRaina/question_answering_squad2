@@ -84,7 +84,6 @@ def main(args):
 
         resp_start = start_probs[sep+1:-1] / np.sum(start_probs[sep+1:-1])
         resp_end = end_probs[sep+1:-1] / np.sum(end_probs[sep+1:-1])
-        
 
         entrop = ((entropy(resp_start, base=2) + entropy(resp_end, base=2)) / 2) / math.log(len(resp_start), 2)
         # print(entrop)

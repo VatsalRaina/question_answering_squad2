@@ -102,31 +102,6 @@ def main(args):
     # print(np.mean(entropy_off))
 
 
-    # pred_start_logits = []
-    # pred_end_logits = []
-    # count = 0
-    # for item in dl:
-    #     print(count)
-    #     count+=1
-    #     inp_id = item[0].to(device)
-    #     with torch.no_grad():
-    #         start_logits, end_logits = model(inp_id)
-    #     b_start_logits = start_logits.detach().cpu().numpy().tolist()
-    #     # pred_start_logits += b_start_logits
-    #     b_end_logits = end_logits.detach().cpu().numpy().tolist()
-    #     if len(pred_start_logits)==0:
-    #         pred_start_logits += b_start_logits
-    #         pred_end_logits += b_end_logits
-    #     else:
-    #         pred_start_logits.extend(b_start_logits)
-    #         pred_end_logits.extend(b_end_logits)
-    #     # pred_end_logits += b_end_logits
-    # pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
-    # Save all necessary file (in order to be able to ensemble)
-    # np.savetxt(args.predictions_save_path + "pred_start_logits_all.txt", pred_start_logits)
-    # np.savetxt(args.predictions_save_path + "pred_end_logits_all.txt", pred_end_logits)
-
-
 if __name__ == '__main__':
     args = parser.parse_args()
     main(args)

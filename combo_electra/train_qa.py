@@ -148,7 +148,7 @@ def main(args):
 
     checkpoint = True
     if checkpoint:
-        model = torch.load("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/large_inhouse1/", map_location=device) 
+        model = torch.load("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/large_inhouse1/electra_comboQA_seed1.pt", map_location=device) 
     else:
         model = ElectraQA().to(device)
 

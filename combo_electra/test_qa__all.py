@@ -193,10 +193,15 @@ def main(args):
     print(f_score)
 
     # Save all necessary file (in order to be able to ensemble)
-    np.savetxt(args.predictions_save_path + "pred_start_logits_all.txt", pred_start_logits)
-    np.savetxt(args.predictions_save_path + "pred_end_logits_all.txt", pred_end_logits)
-    np.savetxt(args.predictions_save_path + "verification_probs_all.txt", pred_verification_logits)
+    # np.savetxt(args.predictions_save_path + "pred_start_logits_all.txt", pred_start_logits)
+    # np.savetxt(args.predictions_save_path + "pred_end_logits_all.txt", pred_end_logits)
+    # np.savetxt(args.predictions_save_path + "verification_probs_all.txt", pred_verification_logits)
 
+    np.save(args.predictions_save_path + "pred_start_logits_all.npy", pred_start_logits)
+    np.save(args.predictions_save_path + "pred_end_logits_all.npy", pred_end_logits)
+    np.save(args.predictions_save_path + "verification_probs_all.npy", pred_verification_logits)
+
+    
 
 if __name__ == '__main__':
     args = parser.parse_args()

@@ -230,7 +230,7 @@ def main(args):
         print("  Training epoch took: {:}".format(format_time(time.time() - t0)))
 
     # Save the model to a file
-    file_path = args.save_path+'electra_comboQA_seed'+str(args.seed)+'.pt'
+    file_path = args.save_path+'electra_comboQA_epochs3_seed'+str(args.seed)+'.pt'
     torch.save(model, file_path)
 
 

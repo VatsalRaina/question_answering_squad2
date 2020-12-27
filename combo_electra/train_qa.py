@@ -22,7 +22,7 @@ from models import ElectraQA
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
 parser.add_argument('--learning_rate', type=float, default=5e-5, help='Specify the initial learning rate')
-parser.add_argument('--adam_epsilon', type=float, default=1e-8, help='Specify the AdamW loss epsilon')
+parser.add_argument('--adam_epsilon', type=float, default=1e-6, help='Specify the AdamW loss epsilon')
 parser.add_argument('--lr_decay', type=float, default=0.85, help='Specify the learning rate decay rate')
 parser.add_argument('--dropout', type=float, default=0.1, help='Specify the dropout rate')
 parser.add_argument('--n_epochs', type=int, default=1, help='Specify the number of epochs to train for')
@@ -146,11 +146,11 @@ def main(args):
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
-    checkpoint = True
-    if checkpoint:
-        model = torch.load("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/large_inhouse1/electra_comboQA_seed1.pt", map_location=device) 
-    else:
-        model = ElectraQA().to(device)
+    # checkpoint = True
+    # if checkpoint:
+    #     model = torch.load("/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/combo_electra/large_inhouse1/electra_comboQA_seed1.pt", map_location=device) 
+    # else:
+    model = ElectraQA().to(device)
 
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
@@ -163,7 +163,7 @@ def main(args):
     total_steps = len(train_dataloader) * args.n_epochs
     # Create the learning rate scheduler.
     scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                num_warmup_steps = 0, # Default value in run_glue.py
+                                                num_warmup_steps = 306,
                                                 num_training_steps = total_steps)
 
 
@@ -210,9 +210,9 @@ def main(args):
             total_loss += loss.item()
             optimizer.zero_grad()
             loss.backward()
-            # Clip the norm of the gradients to 1.0.
+            # Clip the norm of the gradients to 0.5.
             # This is to help prevent the "exploding gradients" problem.
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
             # Update parameters and take a step using the computed gradient.
             # The optimizer dictates the "update rule"--how the parameters are
             # modified based on their gradients, the learning rate, etc.

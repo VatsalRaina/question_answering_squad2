@@ -168,7 +168,7 @@ def main(args):
                                                 num_training_steps = total_steps)
 
 
-    accumulation_steps = 16
+    # accumulation_steps = 16
 
     criterion_verification = torch.nn.BCELoss()
     criterion_qa = torch.nn.CrossEntropyLoss()
@@ -198,7 +198,7 @@ def main(args):
             b_tok_typ_ids = batch[3].to(device)
             b_att_msks = batch[4].to(device)
             b_labs = batch[5].to(device)
-            # model.zero_grad()
+            model.zero_grad()
             start_logits, end_logits, verification_logits = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids)
             
             loss_verification = criterion_verification(verification_logits, b_labs)
@@ -213,19 +213,19 @@ def main(args):
             loss = alpha1*loss_verification + alpha2*loss_qa
             total_loss += loss.item()
 
-            # optimizer.zero_grad()
+            optimizer.zero_grad()
             loss.backward()
             # Clip the norm of the gradients to 0.5.
             # This is to help prevent the "exploding gradients" problem.
             torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
-            if (step+1) % accumulation_steps == 0:
-                # Update parameters and take a step using the computed gradient.
-                # The optimizer dictates the "update rule"--how the parameters are
-                # modified based on their gradients, the learning rate, etc.
-                optimizer.step()
-                # Update the learning rate.
-                scheduler.step()
-                model.zero_grad()
+            # if (step+1) % accumulation_steps == 0:
+            # Update parameters and take a step using the computed gradient.
+            # The optimizer dictates the "update rule"--how the parameters are
+            # modified based on their gradients, the learning rate, etc.
+            optimizer.step()
+            # Update the learning rate.
+            scheduler.step()
+                # model.zero_grad()
         # Calculate the average loss over the training data.
         avg_train_loss = total_loss / len(train_dataloader)
 
@@ -237,7 +237,7 @@ def main(args):
         print("  Training epoch took: {:}".format(format_time(time.time() - t0)))
 
     # Save the model to a file
-    file_path = args.save_path+'electra_comboQA_epochs3_seed'+str(args.seed)+'.pt'
+    file_path = args.save_path+'electra_comboQA_seed'+str(args.seed)+'.pt'
     torch.save(model, file_path)
 
 

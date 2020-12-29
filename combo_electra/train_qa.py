@@ -21,8 +21,8 @@ from models import ElectraQA
 
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
-parser.add_argument('--learning_rate', type=float, default=5e-5, help='Specify the initial learning rate')
-parser.add_argument('--adam_epsilon', type=float, default=1e-6, help='Specify the AdamW loss epsilon')
+parser.add_argument('--learning_rate', type=float, default=3e-5, help='Specify the initial learning rate')
+parser.add_argument('--adam_epsilon', type=float, default=1e-8, help='Specify the AdamW loss epsilon')
 parser.add_argument('--lr_decay', type=float, default=0.85, help='Specify the learning rate decay rate')
 parser.add_argument('--dropout', type=float, default=0.1, help='Specify the dropout rate')
 parser.add_argument('--n_epochs', type=int, default=1, help='Specify the number of epochs to train for')
@@ -154,8 +154,8 @@ def main(args):
 
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
-                    eps = args.adam_epsilon,
-                    weight_decay = 0.01
+                    eps = args.adam_epsilon
+                    # weight_decay = 0.01
                     )
 
     loss_values = []
@@ -215,9 +215,9 @@ def main(args):
 
             optimizer.zero_grad()
             loss.backward()
-            # Clip the norm of the gradients to 0.5.
+            # Clip the norm of the gradients to 1.0.
             # This is to help prevent the "exploding gradients" problem.
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             # if (step+1) % accumulation_steps == 0:
             # Update parameters and take a step using the computed gradient.
             # The optimizer dictates the "update rule"--how the parameters are

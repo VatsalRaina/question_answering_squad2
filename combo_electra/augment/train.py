@@ -106,11 +106,11 @@ def main(args):
             print(ex)
         tok_type_ids = [0 if i<= inp_ids.index(102) else 1 for i in range(len(inp_ids))]  # Indicates whether part of sentence A or B -> 102 is Id of [SEP] token
         #print(ex)
-        if len(ex["answers"]["text"])==0:
+        if len(ex["answers"])==0:
             start_idx, end_idx = 0, 0
             lab = 0
         else:
-            ans_ids = tokenizer.encode(ex["answers"]["text"][0])
+            ans_ids = tokenizer.encode(ex["answers"][0])
             ans_ids = ans_ids[1:-1]  # Remove the automatically added [CLS] and [SEP] tokens at beginning and end
             start_idx, end_idx = _find_sub_list(ans_ids, inp_ids)
             if start_idx == -1:

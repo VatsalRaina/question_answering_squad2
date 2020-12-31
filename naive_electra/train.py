@@ -19,7 +19,7 @@ from transformers import get_linear_schedule_with_warmup
 
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
-parser.add_argument('--learning_rate', type=float, default=5e-5, help='Specify the initial learning rate')
+parser.add_argument('--learning_rate', type=float, default=3e-5, help='Specify the initial learning rate')
 parser.add_argument('--adam_epsilon', type=float, default=1e-8, help='Specify the AdamW loss epsilon')
 parser.add_argument('--lr_decay', type=float, default=0.85, help='Specify the learning rate decay rate')
 parser.add_argument('--dropout', type=float, default=0.1, help='Specify the dropout rate')
@@ -73,7 +73,9 @@ def main(args):
     train_data = load_dataset('squad_v2', split='train')
     print(train_data[1953])
 
-    tokenizer = ElectraTokenizer.from_pretrained('google/electra-base-discriminator', do_lower_case=True)
+    electra_base = "google/electra-base-discriminator"
+    electra_large = "google/electra-large-discriminator"
+    tokenizer = ElectraTokenizer.from_pretrained(electra_large, do_lower_case=True)
 
 
     start_positions_true = []
@@ -137,7 +139,7 @@ def main(args):
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
-    model = ElectraForQuestionAnswering.from_pretrained("google/electra-base-discriminator")
+    model = ElectraForQuestionAnswering.from_pretrained(electra_large)
     model.to(device)
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
@@ -150,7 +152,7 @@ def main(args):
     total_steps = len(train_dataloader) * args.n_epochs
     # Create the learning rate scheduler.
     scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                num_warmup_steps = 0, # Default value in run_glue.py
+                                                num_warmup_steps = 306,
                                                 num_training_steps = total_steps)
 
 

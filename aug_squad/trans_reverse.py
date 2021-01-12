@@ -31,6 +31,8 @@ def main(args):
     model_fr_to_en = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-fr-en")
 
     aug_train = {}
+    previous_passage = ""
+    previous_aug_passage = ""
     count = 0
     for ex in train_data:
         count+=1
@@ -45,31 +47,37 @@ def main(args):
         current['context'] = passage
         current['answers'] = answers
 
-        # Tokenize the text
-        batch = tokenizer_en_to_fr.prepare_seq2seq_batch(src_texts=[passage])
-        # Make sure that the tokenized text does not exceed the maximum
-        # allowed size of 512
-        batch["input_ids"] = batch["input_ids"][:, :512]
-        batch["attention_mask"] = batch["attention_mask"][:, :512]
+        if passage == previous_passage:
+            current['aug_context'] = previous_aug_passage
+        else:
+            # Tokenize the text
+            batch = tokenizer_en_to_fr.prepare_seq2seq_batch(src_texts=[passage])
+            # Make sure that the tokenized text does not exceed the maximum
+            # allowed size of 512
+            batch["input_ids"] = batch["input_ids"][:, :512]
+            batch["attention_mask"] = batch["attention_mask"][:, :512]
 
-        # Perform the translation and decode the output
-        translation = model_en_to_fr.generate(**batch)
-        french = tokenizer_en_to_fr.batch_decode(translation, skip_special_tokens=True)[0]
+            # Perform the translation and decode the output
+            translation = model_en_to_fr.generate(**batch)
+            french = tokenizer_en_to_fr.batch_decode(translation, skip_special_tokens=True)[0]
 
-        # Now perform the reverse translation
+            # Now perform the reverse translation
 
-        # Tokenize the text
-        batch = tokenizer_fr_to_en.prepare_seq2seq_batch(src_texts=[french])
-        # Make sure that the tokenized text does not exceed the maximum
-        # allowed size of 512
-        batch["input_ids"] = batch["input_ids"][:, :512]
-        batch["attention_mask"] = batch["attention_mask"][:, :512]
+            # Tokenize the text
+            batch = tokenizer_fr_to_en.prepare_seq2seq_batch(src_texts=[french])
+            # Make sure that the tokenized text does not exceed the maximum
+            # allowed size of 512
+            batch["input_ids"] = batch["input_ids"][:, :512]
+            batch["attention_mask"] = batch["attention_mask"][:, :512]
 
-        # Perform the translation and decode the output
-        translation = model_fr_to_en.generate(**batch)
-        english = tokenizer_fr_to_en.batch_decode(translation, skip_special_tokens=True)[0]
+            # Perform the translation and decode the output
+            translation = model_fr_to_en.generate(**batch)
+            english = tokenizer_fr_to_en.batch_decode(translation, skip_special_tokens=True)[0]
 
-        current['aug_context'] = english
+            current['aug_context'] = english
+
+        previous_aug_passage = current['aug_context']
+        previous_passage = passage
         aug_train[qid] = current
 
         print("Original:")

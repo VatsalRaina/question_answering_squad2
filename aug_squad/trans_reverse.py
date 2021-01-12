@@ -31,7 +31,7 @@ def main(args):
     model_fr_to_en = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-fr-en")
 
     aug_train = {}
-
+    count = 0
     for ex in train_data:
         count+=1
         print(count)

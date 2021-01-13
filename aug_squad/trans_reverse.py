@@ -34,7 +34,7 @@ def main(args):
     previous_passage = ""
     previous_aug_passage = ""
     count = 0
-    for ex in train_data:
+    for ex in train_data[20000:]:
         count+=1
         print(count)
         if count==20001:
@@ -87,7 +87,7 @@ def main(args):
         print("Answers:")
         print(answers)
         
-    with open(args.predictions_save_path + "augmented_squad2_sec1.json", 'w') as fp:
+    with open(args.predictions_save_path + "augmented_squad2_sec2.json", 'w') as fp:
         json.dump(aug_train, fp)
 
 if __name__ == '__main__':

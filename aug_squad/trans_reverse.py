@@ -34,11 +34,13 @@ def main(args):
     previous_passage = ""
     previous_aug_passage = ""
     count = 0
-    for ex in train_data[20000:]:
+    for ex in train_data:
         count+=1
         print(count)
-        if count==20001:
-           break
+        if count<20001:
+           continue
+        if count==40001:
+            break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         answers = ex["answers"]["text"]
 

@@ -37,9 +37,9 @@ def main(args):
     for ex in train_data:
         count+=1
         print(count)
-        if count<20001:
+        if count<40001:
            continue
-        if count==40001:
+        if count==60001:
             break
         question, passage, qid = ex["question"], ex["context"], ex["id"]
         answers = ex["answers"]["text"]
@@ -89,7 +89,7 @@ def main(args):
         print("Answers:")
         print(answers)
         
-    with open(args.predictions_save_path + "augmented_squad2_sec2.json", 'w') as fp:
+    with open(args.predictions_save_path + "augmented_squad3_sec2.json", 'w') as fp:
         json.dump(aug_train, fp)
 
 if __name__ == '__main__':

@@ -89,7 +89,7 @@ def main(args):
         print("Answers:")
         print(answers)
         
-    with open(args.predictions_save_path + "augmented_squad3_sec2.json", 'w') as fp:
+    with open(args.predictions_save_path + "augmented_squad2_sec3.json", 'w') as fp:
         json.dump(aug_train, fp)
 
 if __name__ == '__main__':

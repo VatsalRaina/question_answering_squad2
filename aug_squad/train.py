@@ -73,17 +73,17 @@ def main(args):
     device = get_default_device()
 
     dir_loc = "/home/alta/relevance/vr311/phd/question_answering/playing_with_squad/aug_squad/back_translation/completed_json/augmented_squad2_sec"
-    with open(dir_loc + "1") as f:
+    with open(dir_loc + "1.json") as f:
         train_data = json.load(f)
-    with open(dir_loc + "2") as f:
+    with open(dir_loc + "2.json") as f:
         train_data = train_data.update(json.load(f))
-    with open(dir_loc + "3") as f:
+    with open(dir_loc + "3.json") as f:
         train_data = train_data.update(json.load(f))
-    with open(dir_loc + "4") as f:
+    with open(dir_loc + "4.json") as f:
         train_data = train_data.update(json.load(f))
-    with open(dir_loc + "5") as f:
+    with open(dir_loc + "5.json") as f:
         train_data = train_data.update(json.load(f))
-    with open(dir_loc + "6") as f:
+    with open(dir_loc + "6.json") as f:
         train_data = train_data.update(json.load(f))
 
 

@@ -55,6 +55,10 @@ def _find_sub_list(sl,l):
     print("Didn't find match, return <no answer>")
     return -1,0
 
+def Merge(dict1, dict2):
+    res = {**dict1, **dict2}
+    return res
+
 
 def main(args):
     if not os.path.isdir('CMDs'):
@@ -76,15 +80,15 @@ def main(args):
     with open(dir_loc + "1.json") as f:
         train_data = json.load(f)
     with open(dir_loc + "2.json") as f:
-        train_data = train_data.update(json.load(f))
+        train_data = Merge(train_data, json.load(f))
     with open(dir_loc + "3.json") as f:
-        train_data = train_data.update(json.load(f))
+        train_data = Merge(train_data, json.load(f))
     with open(dir_loc + "4.json") as f:
-        train_data = train_data.update(json.load(f))
+        train_data = Merge(train_data, json.load(f))
     with open(dir_loc + "5.json") as f:
-        train_data = train_data.update(json.load(f))
+        train_data = Merge(train_data, json.load(f))
     with open(dir_loc + "6.json") as f:
-        train_data = train_data.update(json.load(f))
+        ttrain_data = Merge(train_data, json.load(f))
 
 
 

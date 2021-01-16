@@ -88,7 +88,7 @@ def main(args):
     with open(dir_loc + "5.json") as f:
         train_data = Merge(train_data, json.load(f))
     with open(dir_loc + "6.json") as f:
-        ttrain_data = Merge(train_data, json.load(f))
+        train_data = Merge(train_data, json.load(f))
 
 
 
@@ -103,22 +103,22 @@ def main(args):
     token_type_ids = []
     count = 0
     no_answer = 0
-    num_falied = 0
+    num_failed = 0
     for ex in train_data:
         count+=1
         #if count==17:
         #    break
-        question, passage = ex["question"], ex["aug_context"]
+        question, passage = train_data[ex]["question"], train_data[ex]["aug_context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
         if len(inp_ids) > 512:
             inp_ids = inp_ids[:512]
         tok_type_ids = [0 if i<= inp_ids.index(102) else 1 for i in range(len(inp_ids))]  # Indicates whether part of sentence A or B -> 102 is Id of [SEP] token
         #print(ex)
-        if len(ex["answers"])==0:
+        if len(train_data[ex]["answers"])==0:
             start_idx, end_idx = 0, 0
         else:
-            ans_ids = tokenizer.encode(ex["answers"][0])
+            ans_ids = tokenizer.encode(train_data[ex]["answers"][0])
             ans_ids = ans_ids[1:-1]  # Remove the automatically added [CLS] and [SEP] tokens at beginning and end
             start_idx, end_idx = _find_sub_list(ans_ids, inp_ids)
             if start_idx == -1:

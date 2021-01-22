@@ -195,7 +195,9 @@ def main(args):
             model.zero_grad()
             outputs = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids, start_positions=b_start_pos_true, end_positions=b_end_pos_true)
             loss = outputs[0]
-            total_loss += loss.item()
+            # For multiple GPUs
+            for l in loss.item():
+                total_loss += l
             loss.backward()
             # Clip the norm of the gradients to 1.0.
             # This is to help prevent the "exploding gradients" problem.

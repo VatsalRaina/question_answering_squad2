@@ -142,7 +142,13 @@ def main(args):
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
     model = ElectraForQuestionAnswering.from_pretrained(electra_large)
+    # Try using multiple cores on a GPU
+    model = torch.nn.DataParallel(model)
     model.to(device)
+    # The core which combines the results from the other cores
+    gpu = 0
+    torch.cuda.set_device(gpu)
+    model.cuda(gpu)
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
                     eps = args.adam_epsilon

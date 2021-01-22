@@ -146,9 +146,9 @@ def main(args):
     model = torch.nn.DataParallel(model)
     model.to(device)
     # The core which combines the results from the other cores
-    gpu = 0
-    torch.cuda.set_device(gpu)
-    model.cuda(gpu)
+    #gpu = 0
+    #torch.cuda.set_device(gpu)
+    #model.cuda(gpu)
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
                     eps = args.adam_epsilon

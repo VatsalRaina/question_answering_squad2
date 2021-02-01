@@ -146,6 +146,8 @@ def main(args):
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
     model = torch.load(args.model_path, map_location=device)
+    # Try using multiple cores on a GPU
+    model = torch.nn.DataParallel(model)
     model.to(device)
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,
@@ -193,8 +195,10 @@ def main(args):
             model.zero_grad()
             outputs = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids, start_positions=b_start_pos_true, end_positions=b_end_pos_true)
             loss = outputs[0]
-            total_loss += loss.item()
-            loss.backward()
+            total_loss += torch.sum(loss).item()
+            torch.sum(loss).backward()
+            #total_loss += loss.item()
+            #loss.backward()
             # Clip the norm of the gradients to 1.0.
             # This is to help prevent the "exploding gradients" problem.
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

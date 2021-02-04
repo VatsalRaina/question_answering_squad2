@@ -77,7 +77,7 @@ def main(args):
     device = get_default_device()
 
     # This dataset only consists of positive samples
-    dir_loc = "/home/alta/relevance/vr311/phd/data_spokenSquad/Spoken-SQuAD/spoken_train-v1.1.json"
+    dir_loc = "/home/alta/relevance/vr311/data_spokenSquad/Spoken-SQuAD/spoken_train-v1.1.json"
     with open(dir_loc) as f:
         train_data = json.load(f)
 

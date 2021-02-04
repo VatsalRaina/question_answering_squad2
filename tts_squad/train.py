@@ -99,11 +99,11 @@ def main(args):
         count+=1
         #if count==17:
         #    break
-        for par in train_data["data"][ex]["paragraphs"]:
-            passage = train_data["data"][ex]["paragraphs"][par]
-            for qa in train_data["data"][ex]["paragraphs"][par]["qas"]:
-                answer = train_data["data"][ex]["paragraphs"][par]["qas"][qa]["answers"][0]["text"]
-                question = train_data["data"][ex]["paragraphs"][par]["qas"][qa]["question"]
+        for par in ex["paragraphs"]:
+            passage = par["context"]
+            for qa in par["qas"]:
+                answer = qa["answers"][0]["text"]
+                question = qa["question"]
                 combo = question + " [SEP] " + passage
                 inp_ids = tokenizer.encode(combo)
                 if len(inp_ids) > 512:

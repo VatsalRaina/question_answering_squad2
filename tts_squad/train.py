@@ -111,6 +111,9 @@ def main(args):
                 tok_type_ids = [0 if i<= inp_ids.index(102) else 1 for i in range(len(inp_ids))]  # Indicates whether part of sentence A or B -> 102 is Id of [SEP] token
                 ans_ids = tokenizer.encode(answer)
                 ans_ids = ans_ids[1:-1]  # Remove the automatically added [CLS] and [SEP] tokens at beginning and end
+                if len(ans_ids==0):
+                    num_failed+=1
+                    continue
                 start_idx, end_idx = _find_sub_list(ans_ids, inp_ids)
                 if start_idx == -1:
                     num_failed += 1

@@ -104,8 +104,10 @@ def main(args):
     for inp_id, tok_typ_id, att_msk in dl:
         print(count)
         count+=1
-        if count == 750:
-            break
+        # if count == 750:
+        #     break
+        if count < 750:
+            continue
         inp_id, tok_typ_id, att_msk= inp_id.to(device), tok_typ_id.to(device), att_msk.to(device)
         with torch.no_grad():
             logits = model(input_ids=inp_id, attention_mask=att_msk, token_type_ids=tok_typ_id)
@@ -114,7 +116,7 @@ def main(args):
 
     pred_logits = np.asarray(pred_logits)
 
-    np.save(args.predictions_save_path + "pred_logits_half1.npy", pred_logits)
+    np.save(args.predictions_save_path + "pred_logits_half2.npy", pred_logits)
 
 if __name__ == '__main__':
     args = parser.parse_args()

@@ -112,7 +112,7 @@ def main(args):
 
     pred_logits = np.asarray(pred_logits)
 
-    np.save(args.predictions_save_path + "pred_logits_all.npy", pred_start_logits)
+    np.save(args.predictions_save_path + "pred_logits_all.npy", pred_logits)
     
 
 if __name__ == '__main__':

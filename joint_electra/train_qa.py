@@ -191,6 +191,7 @@ def main(args):
             logits = model(input_ids=b_input_ids, attention_mask=b_att_msks, token_type_ids=b_tok_typ_ids)
             
             loss = criterion_qa(logits, b_all_pos_true)
+            print(loss)
 
             total_loss += loss.item()
 

@@ -60,7 +60,7 @@ class ElectraQA(torch.nn.Module):
         # expanded_attention_mask = attention_mask.repeat(1, attention_mask.size()[1])
         # expanded_attention_mask = torch.reshape(expanded_attention_mask, (attention_mask.size()[0], attention_mask.size()[1], attention_mask.size()[1]))
         # print(expanded_attention_mask.size())
-        conditional_logits = self.conditional_layer(logits, src_key_padding_mask=attention_mask)
+        conditional_logits = self.conditional_layer(logits, src_key_padding_mask=~attention_mask.bool())
         print(conditional_logits.size())
         start_logits, end_logits = conditional_logits.split(1, dim=-1)
         start_logits = start_logits.squeeze(-1)

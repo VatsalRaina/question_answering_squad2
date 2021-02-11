@@ -89,8 +89,8 @@ def main(args):
     too_long = 0
     for ex in train_data:
         count+=1
-        if count==64:
-           break
+        # if count==64:
+        #    break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)

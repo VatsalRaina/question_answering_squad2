@@ -89,8 +89,8 @@ def main(args):
     too_long = 0
     for ex in train_data:
         count+=1
-        if count==64:
-           break
+        # if count==64:
+        #    break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
@@ -207,7 +207,7 @@ def main(args):
 
             loss = alpha1*loss_verification + alpha2*loss_qa
             total_loss += loss.item()
-
+            print(loss.item())
             optimizer.zero_grad()
             loss.backward()
             # Clip the norm of the gradients to 1.0.

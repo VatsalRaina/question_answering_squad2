@@ -90,9 +90,7 @@ class ElectraQAExtension(torch.nn.Module):
 
         start_logits, end_logits, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
         logits = torch.cat((torch.unsqueeze(start_logits,2), torch.unsqueeze(end_logits,2)), 2)
-        print(logits.size())
         logits = torch.transpose(logits, 0, 1)
-        print(logits.size())
         conditional_logits = self.conditional_layer(logits, src_key_padding_mask=~attention_mask.bool())
         conditional_logits = torch.transpose(conditional_logits, 0, 1)
         start_logits, end_logits = conditional_logits.split(1, dim=-1)

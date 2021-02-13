@@ -4,8 +4,6 @@ import torch
 import torchvision.models as models
 from transformers import ElectraModel, ElectraConfig
 
-
-
 class ElectraClassificationHead(torch.nn.Module):
     def __init__(self):
 
@@ -41,9 +39,6 @@ class ElectraQA(torch.nn.Module):
         self.dropout = torch.nn.Dropout(self.electra.config.hidden_dropout_prob)
         # self.init_weights()
 
-        # Transformer encoder to model the conditional probabilty (in both directions)
-        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=2, nhead=1, dim_feedforward=8)
-
     
     def forward(self, input_ids, attention_mask, token_type_ids):
 
@@ -54,17 +49,53 @@ class ElectraQA(torch.nn.Module):
         # pooled_output = self.dropout(pooled_output)
 
         logits = self.qa_outputs(sequence_output)
+        start_logits, end_logits = logits.split(1, dim=-1)
+        start_logits = start_logits.squeeze(-1)
+        end_logits = end_logits.squeeze(-1)
+
+        verification_logits = torch.sigmoid(self.classifier(sequence_output))
+
+        return start_logits, end_logits, verification_logits
+    
+    def saliency(self, input_embeds):
+
+        outputs = self.electra(inputs_embeds=input_embeds)
+
+        sequence_output = outputs[0]
+        # pooled_output = outputs[1]
+        # pooled_output = self.dropout(pooled_output)
+
+        logits = self.qa_outputs(sequence_output)
+        start_logits, end_logits = logits.split(1, dim=-1)
+        start_logits = start_logits.squeeze(-1)
+        end_logits = end_logits.squeeze(-1)
+
+        verification_logits = torch.sigmoid(self.classifier(sequence_output))
+
+        return start_logits, end_logits, verification_logits
+
+
+
+class ElectraQAExtension(torch.nn.Module):
+    def __init__(self, model_path, device):
+
+        super(ElectraQAExtension, self).__init__()
+
+        self.network = torch.load(model_path, map_location=device)
+        # Transformer encoder to model the conditional probabilty (in both directions)
+        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=2, nhead=1, dim_feedforward=8)
+
+    
+    def forward(self, input_ids, attention_mask, token_type_ids):
+
+        start_logits, end_logits, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
+        logits = torch.concat((torch.unsqueeze(start_logits,1), torch.unsqueeze(end_logits,1)), 2)
         logits = torch.transpose(logits, 0, 1)
-        # expanded_attention_mask = attention_mask.repeat(1, attention_mask.size()[1])
-        # expanded_attention_mask = torch.reshape(expanded_attention_mask, (attention_mask.size()[0], attention_mask.size()[1], attention_mask.size()[1]))
-        # print(expanded_attention_mask.size())
         conditional_logits = self.conditional_layer(logits, src_key_padding_mask=~attention_mask.bool())
         conditional_logits = torch.transpose(conditional_logits, 0, 1)
         start_logits, end_logits = conditional_logits.split(1, dim=-1)
         start_logits = start_logits.squeeze(-1)
         end_logits = end_logits.squeeze(-1)
-
-        verification_logits = torch.sigmoid(self.classifier(sequence_output))
 
         return start_logits, end_logits, verification_logits
     

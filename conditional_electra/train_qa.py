@@ -17,7 +17,7 @@ from keras.preprocessing.sequence import pad_sequences
 from transformers import AdamW, ElectraConfig
 from transformers import get_linear_schedule_with_warmup
 
-from models import ElectraQA
+from models import ElectraQAExtension
 
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--batch_size', type=int, default=32, help='Specify the training batch size')
@@ -28,6 +28,7 @@ parser.add_argument('--dropout', type=float, default=0.1, help='Specify the drop
 parser.add_argument('--n_epochs', type=int, default=1, help='Specify the number of epochs to train for')
 parser.add_argument('--seed', type=int, default=1, help='Specify the global random seed')
 parser.add_argument('--save_path', type=str, help='Load path to which trained model will be saved')
+parser.add_argument('--model_path', type=str, help='Load path to a trained model that will be finetuned')
 
 def format_time(elapsed):
     '''
@@ -89,8 +90,8 @@ def main(args):
     too_long = 0
     for ex in train_data:
         count+=1
-        # if count==64:
-        #    break
+        if count==64:
+           break
         question, passage = ex["question"], ex["context"]
         combo = question + " [SEP] " + passage
         inp_ids = tokenizer.encode(combo)
@@ -145,7 +146,8 @@ def main(args):
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.batch_size)
 
-    model = ElectraQA().to(device)
+    model = ElectraQAExtension(args.model_path, device).to(device)
+    # Set weights from model_independent and also fix those paramaters so that they can't be trained further.
 
     optimizer = AdamW(model.parameters(),
                     lr = args.learning_rate,

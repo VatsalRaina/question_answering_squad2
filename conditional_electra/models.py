@@ -89,7 +89,6 @@ class ElectraQAExtension(torch.nn.Module):
     def forward(self, input_ids, attention_mask, token_type_ids):
 
         start_logits, end_logits, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
-        print(logits.size())
         logits = torch.cat((torch.unsqueeze(start_logits,1), torch.unsqueeze(end_logits,1)), 2)
         print(logits.size())
         logits = torch.transpose(logits, 0, 1)

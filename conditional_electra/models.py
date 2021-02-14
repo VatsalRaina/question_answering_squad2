@@ -92,7 +92,7 @@ class ElectraQAExtension(torch.nn.Module):
     
     def forward(self, input_ids, attention_mask, token_type_ids):
 
-        start_logits, end_logits, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
+        start_logits, end_logits_ind, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
 
 
         # logits = torch.cat((torch.unsqueeze(start_logits,2), torch.unsqueeze(end_logits,2)), 2)
@@ -104,7 +104,7 @@ class ElectraQAExtension(torch.nn.Module):
         # end_logits = end_logits.squeeze(-1)
 
         # linear layer with residual connection from original end_logits
-        end_logits = self.conditional_layer(torch.nn.GELU(start_logits)) + end_logits
+        end_logits = self.conditional_layer(torch.unsqueeze(start_logits,2)) + end_logits_ind
 
         return start_logits, end_logits, verification_logits
     

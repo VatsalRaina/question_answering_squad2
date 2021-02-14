@@ -149,7 +149,7 @@ def main(args):
     model = ElectraQAExtension(args.model_path, device).to(device)
     # Set weights from model_independent and also fix those paramaters so that they can't be trained further.
 
-    optimizer = AdamW(model.parameters(),
+    optimizer = AdamW(model.conditional_layer.parameters(),
                     lr = args.learning_rate,
                     eps = args.adam_epsilon
                     # weight_decay = 0.01

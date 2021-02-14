@@ -82,8 +82,10 @@ class ElectraQAExtension(torch.nn.Module):
         super(ElectraQAExtension, self).__init__()
 
         self.network = torch.load(model_path, map_location=device)
+        for param in self.network.parameters():
+            param.requires_grad = False
         # Transformer encoder to model the conditional probabilty (in both directions)
-        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=2, nhead=1, dim_feedforward=8)
+        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=2, nhead=1, dim_feedforward=128)
 
     
     def forward(self, input_ids, attention_mask, token_type_ids):

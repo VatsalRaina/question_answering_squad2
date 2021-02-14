@@ -104,23 +104,6 @@ class ElectraQAExtension(torch.nn.Module):
         # end_logits = end_logits.squeeze(-1)
 
         # linear layer with residual connection from original end_logits
-        end_logits = torch.transpose(self.conditional_layer(torch.transpose(torch.unsqueeze(start_logits,2), 0, 1), src_key_padding_mask=~attention_mask.bool()) + end_logits_ind, 0, 1).squeeze(-1)
-
-        return start_logits, end_logits, verification_logits
-    
-    def saliency(self, input_embeds):
-
-        outputs = self.electra(inputs_embeds=input_embeds)
-
-        sequence_output = outputs[0]
-        # pooled_output = outputs[1]
-        # pooled_output = self.dropout(pooled_output)
-
-        logits = self.qa_outputs(sequence_output)
-        start_logits, end_logits = logits.split(1, dim=-1)
-        start_logits = start_logits.squeeze(-1)
-        end_logits = end_logits.squeeze(-1)
-
-        verification_logits = torch.sigmoid(self.classifier(sequence_output))
+        end_logits = torch.transpose(self.conditional_layer(torch.transpose(torch.unsqueeze(start_logits,2), 0, 1), src_key_padding_mask=~attention_mask.bool()), 0, 1).squeeze(-1) + end_logits_ind
 
         return start_logits, end_logits, verification_logits

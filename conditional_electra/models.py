@@ -85,8 +85,8 @@ class ElectraQAExtension(torch.nn.Module):
         for param in self.network.parameters():
             param.requires_grad = False
         # Transformer encoder to model the conditional probabilty (in both directions)
-        # self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=2, nhead=1, dim_feedforward=128)
-        self.conditional_layer = torch.nn.Linear(512, 512)
+        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=1, nhead=1, dim_feedforward=128)
+        # self.conditional_layer = torch.nn.Linear(512, 512)
 
 
     

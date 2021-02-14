@@ -104,7 +104,7 @@ class ElectraQAExtension(torch.nn.Module):
         # end_logits = end_logits.squeeze(-1)
 
         # linear layer with residual connection from original end_logits
-        end_logits = self.conditional_layer(torch.unsqueeze(start_logits,2)) + end_logits_ind
+        end_logits = self.conditional_layer(torch.transpose(torch.unsqueeze(start_logits,2), 0, 1), src_key_padding_mask=~attention_mask.bool()) + end_logits_ind
 
         return start_logits, end_logits, verification_logits
     

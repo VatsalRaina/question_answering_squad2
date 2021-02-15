@@ -82,18 +82,31 @@ class ElectraQAExtension(torch.nn.Module):
         super(ElectraQAExtension, self).__init__()
 
         self.network = torch.load(model_path, map_location=device)
-        for param in self.network.parameters():
+        self.electra = self.network.electra
+        for param in self.electra.parameters():
             param.requires_grad = False
-        # Transformer encoder to model the conditional probabilty (in both directions)
-        self.conditional_layer = torch.nn.TransformerEncoderLayer(d_model=1, nhead=1, dim_feedforward=128)
-        # self.conditional_layer = torch.nn.Linear(512, 512)
+        # Transformer encoder to model the conditional probabilty
+        self.conditional_layer1 = torch.nn.TransformerEncoderLayer(d_model=self.electra.config.hidden_size, nhead=1)
+        self.conditional_layer2 = torch.nn.TransformerEncoderLayer(d_model=self.electra.config.hidden_size, nhead=1)
+        self.qa_start = torch.nn.Linear(self.electra.config.hidden_size, 1)
+        self.qa_end = torch.nn.Linear(self.electra.config.hidden_size, 1)
+        self.classifier = ElectraClassificationHead()
 
 
     
     def forward(self, input_ids, attention_mask, token_type_ids):
 
-        start_logits, end_logits_ind, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
+        outputs = self.electra(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        sequence_output = outputs[0]
+        verification_logits = torch.sigmoid(self.classifier(sequence_output))
 
+        hidden1 = self.conditional_layer1(torch.transpose(sequence_output, 0, 1), src_key_padding_mask=~attention_mask.bool())
+        start_logits = self.qa_start(torch.transpose(hidden1, 0, 1)).squeeze(-1)
+
+        hidden2 = self.conditional_layer2(hidden1, src_key_padding_mask=~attention_mask.bool())
+        end_logits = self.qa_end(torch.transpose(hidden2, 0, 1)).squeeze(-1)
+
+        #start_logits_ind, end_logits_ind, verification_logits = self.network(input_ids, attention_mask, token_type_ids)
 
         # logits = torch.cat((torch.unsqueeze(start_logits,2), torch.unsqueeze(end_logits,2)), 2)
         # logits = torch.transpose(logits, 0, 1)
@@ -104,6 +117,6 @@ class ElectraQAExtension(torch.nn.Module):
         # end_logits = end_logits.squeeze(-1)
 
         # linear layer with residual connection from original end_logits
-        end_logits = torch.transpose(self.conditional_layer(torch.transpose(torch.unsqueeze(start_logits,2), 0, 1), src_key_padding_mask=~attention_mask.bool()), 0, 1).squeeze(-1) + end_logits_ind
+        #end_logits = torch.transpose(self.conditional_layer(torch.transpose(torch.unsqueeze(start_logits,2), 0, 1), src_key_padding_mask=~attention_mask.bool()), 0, 1).squeeze(-1) + end_logits_ind
 
         return start_logits, end_logits, verification_logits

@@ -74,6 +74,9 @@ def main(args):
         inp_ids = inputs["input_ids"].tolist()[0]
         answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inp_ids[answer_start:answer_end+1]))
 
+        if answer_start == 0:
+            answer = ""
+
         answer = answer.replace(" ' ", "'").replace(" - ", "-").replace(" ( ", " (").replace("( ", "(").replace(" ) ", ") ").replace(" )", ")").replace(" , ", ", ").replace(" ? ", "? ").replace(" . ", ". ").replace(" % ", "% ").replace(" %", "%").replace(" $ ", " $").replace("$ ", "$").replace(" £ ", " £").replace("£ ", "£").replace(" / ", "/").replace(" [ ", "[").replace("[ ", "[").replace(" ] ", "] ").replace(" ]", "]").replace(" !", "!").replace("* ", "*")
         for p in range(10):
             for q in range(10):

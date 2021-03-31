@@ -74,8 +74,8 @@ def main(args):
             start_logits, end_logits = model(input_ids=inp_ids)
         b_start_logits = start_logits.detach().cpu().numpy().tolist()
         b_end_logits = end_logits.detach().cpu().numpy().tolist()
-        pred_start_logits.append(start_logits)
-        pred_end_logits.append(end_logits)
+        pred_start_logits.append(b_start_logits)
+        pred_end_logits.append(b_end_logits)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
         inp_ids = inputs["input_ids"].tolist()[0]

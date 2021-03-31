@@ -53,13 +53,15 @@ def main(args):
     # entropy_off = []
     pred_start_probs = []
     pred_end_probs = []
+    pred_start_logits = []
+    pred_end_logits = []
     for ex in dev_data:
         count+=1
         print(count)
         # if count<3105:
         #     continue
-        # if count==2:
-        #    break
+        if count==10:
+           break
         question, passage, qid = ex["question"], ex["context"].replace("\n", ""), ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"]
@@ -68,7 +70,10 @@ def main(args):
             inputs["input_ids"] = inputs["input_ids"][:,:512]
             inp_ids = inp_ids[:,:512]
         # start_logits, end_logits = model(**inputs)
-        start_logits, end_logits = model(input_ids=inp_ids)
+        with torch.no_grad():
+            start_logits, end_logits = model(input_ids=inp_ids)
+        pred_start_logits.append(start_logits)
+        pred_end_logits.append(end_logits)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
         inp_ids = inputs["input_ids"].tolist()[0]
@@ -132,8 +137,10 @@ def main(args):
                 print(' ')
 
         span_predictions[qid] = answer
+    pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
 
-
+    np.save(args.predictions_save_path + "pred_start_logits_all.npy", pred_start_logits)
+    np.save(args.predictions_save_path + "pred_end_logits_all.npy", pred_end_logits)
     with open(args.predictions_save_path + "predictions.json", 'w') as fp:
         json.dump(span_predictions, fp)
 

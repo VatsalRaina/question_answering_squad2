@@ -76,8 +76,8 @@ def main(args):
         b_end_logits = end_logits.detach().cpu().numpy().tolist()
         b_start_logits = b_start_logits + [0] * (512-len(b_start_logits))
         b_end_logits = b_end_logits + [0] * (512-len(b_end_logits))
-        pred_start_logits+=b_start_logits
-        pred_end_logits+=b_end_logits
+        pred_start_logits.append(b_start_logits)
+        pred_end_logits.append(b_end_logits)
         answer_start = torch.argmax(start_logits)
         answer_end = torch.argmax(end_logits)
         inp_ids = inputs["input_ids"].tolist()[0]
@@ -142,7 +142,7 @@ def main(args):
 
         span_predictions[qid] = answer
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
-
+    print(pred_start_logits.shape)
     np.save(args.predictions_save_path + "pred_start_logits_all.npy", pred_start_logits)
     np.save(args.predictions_save_path + "pred_end_logits_all.npy", pred_end_logits)
     with open(args.predictions_save_path + "predictions.json", 'w') as fp:

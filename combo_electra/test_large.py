@@ -72,8 +72,8 @@ def main(args):
         # start_logits, end_logits = model(**inputs)
         with torch.no_grad():
             start_logits, end_logits = model(input_ids=inp_ids)
-        b_start_logits = start_logits.detach().cpu().numpy().tolist()
-        b_end_logits = end_logits.detach().cpu().numpy().tolist()
+        b_start_logits = start_logits.detach().cpu().numpy().tolist()[0]
+        b_end_logits = end_logits.detach().cpu().numpy().tolist()[0]
         b_start_logits = b_start_logits + [0] * (512-len(b_start_logits))
         b_end_logits = b_end_logits + [0] * (512-len(b_end_logits))
         pred_start_logits.append(b_start_logits)

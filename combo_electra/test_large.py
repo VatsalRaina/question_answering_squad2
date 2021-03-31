@@ -60,8 +60,8 @@ def main(args):
         print(count)
         # if count<3105:
         #     continue
-        if count==10:
-           break
+        # if count==10:
+        #    break
         question, passage, qid = ex["question"], ex["context"].replace("\n", ""), ex["id"]
         inputs = tokenizer.encode_plus(question, passage, add_special_tokens=True, return_tensors="pt")        
         inp_ids = inputs["input_ids"]

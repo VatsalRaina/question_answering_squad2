@@ -72,6 +72,8 @@ def main(args):
         # start_logits, end_logits = model(**inputs)
         with torch.no_grad():
             start_logits, end_logits = model(input_ids=inp_ids)
+        b_start_logits = start_logits.detach().cpu().numpy().tolist()
+        b_end_logits = end_logits.detach().cpu().numpy().tolist()
         pred_start_logits.append(start_logits)
         pred_end_logits.append(end_logits)
         answer_start = torch.argmax(start_logits)

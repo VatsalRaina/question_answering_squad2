@@ -66,7 +66,7 @@ def main(args):
     # Remove whitespaces and convert to lower case
     prompts = [x.strip().lower() for x in prompts]
 
-    with open(args.resps_path) as f:
+    with open(args.responses_path) as f:
         responses = f.readlines()
     # Remove whitespaces and convert to lower case
     responses = [x.strip().lower() for x in responses]

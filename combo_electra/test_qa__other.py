@@ -122,7 +122,8 @@ def main(args):
         pred_start_logits += b_start_logits
         b_end_logits = end_logits.detach().cpu().numpy().tolist()
         pred_end_logits += b_end_logits
-        pred_verification_logits += verification_logits
+        b_verification_logits = verification_logits.detach().cpu().numpy().tolist()
+        pred_verification_logits += b_verification_logits
     pred_start_logits, pred_end_logits = np.asarray(pred_start_logits), np.asarray(pred_end_logits)
     pred_verification_logits = np.asarray(pred_verification_logits)
 
